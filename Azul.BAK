@@ -76,4 +76,4 @@ max_ficha_en_bolsa([], _, NumFichasColorOut, NumFichasColorOut).
 elegirFicha(Color,MazoFichas):-
     nth0(0,MazoFichas,Elem),
     select(Elem,MazoFichas,MazoFichasOut),
-    FichasElegidas = [Elem|FichaElegida]
+    FichasElegidas = [Elem|FichasElegida]
