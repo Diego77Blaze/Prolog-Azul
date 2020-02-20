@@ -5,7 +5,7 @@
 
 %lista de la bolsa de fichas (20 unidades de cada ficha)   y 100 fichas en total (azul amarillo rojo negro y blanco)
 %las fichas se reparten de forma aleatoria a la mesa y meterlas a las factorias de la mesa, cuatro para cada una (la factoria una lista de 4 elementos)
-%otra lista del centro de la mesa, añadiendo las fichas que se quitan de las factorias,
+%otra lista del centro de la mesa, aï¿½adiendo las fichas que se quitan de las factorias,
 %estado completo del juego guardado en una lista que contenga todo
 
 %tablero de jugador con tres sublistas, lineas de patron(5x5 pero con restricciones), mosaico (5x5) y la linea de suelo (siete posiciones)
@@ -31,13 +31,13 @@ ficha('N'). %Ficha Negro
 ficha('R'). %Ficha Rojo
 ficha('O'). %Ficha Naranja
 
-%Regla para seleccionar el número de jugadores de la partida
+%Regla para seleccionar el nï¿½mero de jugadores de la partida
 pedir_numero_jugadores(NumJugadores):-
       repeat,
-      write('Introduce el número de jugadores: '),
+      write('Introduce el nï¿½mero de jugadores: '),
       read(NumJugadores),
       ((NumJugadores >= 2, NumJugadores =< 4, !);
-      writeln('Dato no válido, vuelva a intentarlo'),false).
+      writeln('Dato no vï¿½lido, vuelva a intentarlo'),false).
 
 %Reglas para generar la bolsa de fichas
 generar_bolsa(ListaFichas, ListaFichasOut):-
@@ -58,7 +58,7 @@ generar_bolsa(ListaFichas, ListaFichasOut):-
 
 generar_bolsa(ListaFichasOut, ListaFichasOut).
 
-%Reglas para contar el número de veces que aparece una ficha en una lista
+%Reglas para contar el nï¿½mero de veces que aparece una ficha en una lista
 max_ficha_en_bolsa(ListaFichas, Ficha, NumFichasColor, NumFichasColorOut):-
 %Considera el caso en el que la ficha es igual
       ListaFichas = [FichaAux|MasFichas],
@@ -73,7 +73,17 @@ max_ficha_en_bolsa(ListaFichas, Ficha, NumFichasColor, NumFichasColorOut):-
 max_ficha_en_bolsa([], _, NumFichasColorOut, NumFichasColorOut).
 
 
-elegirFicha(Color,MazoFichas):-
-    nth0(0,MazoFichas,Elem),
-    select(Elem,MazoFichas,MazoFichasOut),
-    FichasElegidas = [Elem|FichaElegida]
+%Elegir ficha de factoria o centro de la mesa cuando ficha sea del color que queremos
+elegirFicha(Color, MazoFichas, NumFichas, MazoFichasAux, NumFichasOut, MazoFichasOut):- %Se escoge el color de la ficha, el mazo de donde se va a extraer, y se generan listas auxiliares
+      MazoFichas = [Ficha|MasFichas], %separamos la primera ficha del resto
+      Color = Ficha, !, %si el color que queremos es el color de la ficha que estamos mirando se harÃ¡ lo siguiente:
+      NumFichasAux is NumFichas+1, %se aumenta el numero de fichas que tenemos de ese color
+      elegirFicha(Color, MasFichas, NumFichasAux, MazoFichasAux, NumFichasOut, MazoFichasOut). %se vuelve a llamar a la funcion para que siga con la siguiente ficha
+%Elegir ficha de factoria o centro de la mesa cuando ficha no sea del color que queremos      
+  elegirFicha(Color, MazoFichas, NumFichas, MazoFichasAux, NumFichasOut, MazoFichasOut):-
+      MazoFichas = [Ficha|MasFichas],
+      Color \= Ficha, !,%si el color que queremos es el color de la ficha que estamos mirando se harÃ¡ lo siguiente:
+      append(MazoFichasAux, [Ficha], MazoFichasAux2),%se actualiza la lista de valores quitando las fichas cogidas
+      elegirFicha(Color, MasFichas, NumFichas, MazoFichasAux2, NumFichasOut, MazoFichasOut).%se vuelve a llamar a la funcion para que siga con la siguiente ficha
+      
+  elegirFicha(_, [], NumFichasOut, MazoFichasOut, NumFichasOut, MazoFichasOut).
