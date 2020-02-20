@@ -1,8 +1,6 @@
 ﻿% Autor:
 % Fecha: 20/02/2020
 
-
-
 %lista de la bolsa de fichas (20 unidades de cada ficha)   y 100 fichas en total (azul amarillo rojo negro y blanco)
 %las fichas se reparten de forma aleatoria a la mesa y meterlas a las factorias de la mesa, cuatro para cada una (la factoria una lista de 4 elementos)
 %otra lista del centro de la mesa, a�adiendo las fichas que se quitan de las factorias,
@@ -30,6 +28,7 @@ ficha('B'). %Ficha Blanco
 ficha('N'). %Ficha Negro
 ficha('R'). %Ficha Rojo
 ficha('O'). %Ficha Naranja
+factoria(['_','_','_','_']).
 
 %Regla para seleccionar el n�mero de jugadores de la partida
 pedir_numero_jugadores(NumJugadores):-
@@ -72,22 +71,21 @@ max_ficha_en_bolsa(ListaFichas, Ficha, NumFichasColor, NumFichasColorOut):-
       max_ficha_en_bolsa(MasFichas, Ficha, NumFichasColor, NumFichasColorOut).
 max_ficha_en_bolsa([], _, NumFichasColorOut, NumFichasColorOut).
 
-
 %Elegir ficha de factoria o centro de la mesa cuando ficha sea del color que queremos
 elegirFicha(Color, MazoFichas, NumFichas, MazoFichasAux, NumFichasOut, MazoFichasOut):- %Se escoge el color de la ficha, el mazo de donde se va a extraer, y se generan listas auxiliares
       MazoFichas = [Ficha|MasFichas], %separamos la primera ficha del resto
       Color = Ficha, !, %si el color que queremos es el color de la ficha que estamos mirando se hará lo siguiente:
       NumFichasAux is NumFichas+1, %se aumenta el numero de fichas que tenemos de ese color
       elegirFicha(Color, MasFichas, NumFichasAux, MazoFichasAux, NumFichasOut, MazoFichasOut). %se vuelve a llamar a la funcion para que siga con la siguiente ficha
-%Elegir ficha de factoria o centro de la mesa cuando ficha no sea del color que queremos      
-  elegirFicha(Color, MazoFichas, NumFichas, MazoFichasAux, NumFichasOut, MazoFichasOut):-
+%Elegir ficha de factoria o centro de la mesa cuando ficha no sea del color que queremos
+elegirFicha(Color, MazoFichas, NumFichas, MazoFichasAux, NumFichasOut, MazoFichasOut):-
       MazoFichas = [Ficha|MasFichas],
       Color \= Ficha, !,%si el color que queremos es el color de la ficha que estamos mirando se hará lo siguiente:
       append(MazoFichasAux, [Ficha], MazoFichasAux2),%se actualiza la lista de valores quitando las fichas cogidas
       elegirFicha(Color, MasFichas, NumFichas, MazoFichasAux2, NumFichasOut, MazoFichasOut).%se vuelve a llamar a la funcion para que siga con la siguiente ficha
-      
+
   elegirFicha(_, [], NumFichasOut, MazoFichasOut, NumFichasOut, MazoFichasOut).
-  
+
 devolverrandom(Init,Fin,X):-random_between(Init,Fin,X).
 rellenarFactorias(FactoriaAux,FactoriaOut,BolsaIn,BolsaOut):-
    length(FactoriaAux,LongitudFactoria),
@@ -103,3 +101,26 @@ rellenarFactorias(FactoriaAux,FactoriaOut,BolsaIn,BolsaOut):-
 rellenarFactorias(FactOut,FactOut,BolsaOut,BolsaOut).
 
 %ejemplo de uso: rellenarFactorias(X,Y,[1,2,3,4,5,4],Z). siendo Y la factoria rellena y z la bolsa con los elementos metidos en la factoria eliminados y la lista siendo la bolsa inicial.
+
+%Reglas para generar las factorias
+generar_factorias(NumJugadores, ListaOut):-
+%Genera factorias para 2 jugadores
+   NumJugadores = 2, !,
+   generar_factorias_aux(5, [], ListaOut).
+generar_factorias(NumJugadores, ListaOut):-
+%Genera factorias para 3 jugadores
+   NumJugadores = 3, !,
+   generar_factorias_aux(7, [], ListaOut).
+generar_factorias(NumJugadores, ListaOut):-
+%Genera factorias para 4 jugadores
+   NumJugadores = 4, !,
+   generar_factorias_aux(9, [], ListaOut).
+%Introduce factorias en una lista si el número de factorias el mayor que 0
+generar_factorias_aux(NumFactorias, ListaFactorias, ListaFactoriasOut):-
+   NumFactorias \= 0, !,
+   NumFactoriasAux is NumFactorias-1,
+   factoria(X),
+   append(ListaFactorias, [X], ListaFactoriasAux),
+   generar_factorias_aux(NumFactoriasAux, ListaFactoriasAux, ListaFactoriasOut).
+%Se devuelve la lista obtenida de factorias
+generar_factorias_aux(_, ListaFactoriasOut, ListaFactoriasOut).
