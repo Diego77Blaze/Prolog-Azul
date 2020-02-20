@@ -1,4 +1,4 @@
-% Autor:
+﻿% Autor:
 % Fecha: 20/02/2020
 
 
@@ -87,3 +87,19 @@ elegirFicha(Color, MazoFichas, NumFichas, MazoFichasAux, NumFichasOut, MazoFicha
       elegirFicha(Color, MasFichas, NumFichas, MazoFichasAux2, NumFichasOut, MazoFichasOut).%se vuelve a llamar a la funcion para que siga con la siguiente ficha
       
   elegirFicha(_, [], NumFichasOut, MazoFichasOut, NumFichasOut, MazoFichasOut).
+  
+devolverrandom(Init,Fin,X):-random_between(Init,Fin,X).
+rellenarFactorias(FactoriaAux,FactoriaOut,BolsaIn,BolsaOut):-
+   length(FactoriaAux,LongitudFactoria),
+   (LongitudFactoria<4),
+   length(BolsaIn,LongitudBolsa),
+   LongitudBolsaF is (LongitudBolsa-1),
+   devolverrandom(0,LongitudBolsaF,NumeroAleatorio),
+   nth0(NumeroAleatorio,BolsaIn,FichaElegida),
+   select(FichaElegida,BolsaIn,BolsaAux),
+   FactoriaAux2=[FichaElegida|FactoriaAux],!,
+   rellenarFactorias(FactoriaAux2,FactoriaOut,BolsaAux,BolsaOut).
+
+rellenarFactorias(FactOut,FactOut,BolsaOut,BolsaOut).
+
+%ejemplo de uso: rellenarFactorias(X,Y,[1,2,3,4,5,4],Z). siendo Y la factoria rellena y z la bolsa con los elementos metidos en la factoria eliminados y la lista siendo la bolsa inicial.
