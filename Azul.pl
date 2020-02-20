@@ -24,3 +24,50 @@
 %se reinicia el juego hasta que un jugador hace una fila completa
 
 %NO HAY QUE HACER MEMORIA SOLO HAY QUE HACER UN FOLIO CON LOS NOMBRES Y HASTA DONDE SE HA LLEGADO.
+
+ficha('A'). %Ficha Azul
+ficha('B'). %Ficha Blanco
+ficha('N'). %Ficha Negro
+ficha('R'). %Ficha Rojo
+ficha('O'). %Ficha Naranja
+
+%Regla para seleccionar el número de jugadores de la partida
+pedir_numero_jugadores(NumJugadores):-
+      repeat,
+      write('Introduce el número de jugadores: '),
+      read(NumJugadores),
+      ((NumJugadores >= 2, NumJugadores =< 4, !);
+      writeln('Dato no válido, vuelva a intentarlo'),false).
+
+%Reglas para generar la bolsa de fichas
+generar_bolsa(ListaFichas, ListaFichasOut):-
+%Considera el caso en el que la ficha no se encuentra en la bolsa
+      ficha(X),
+      \+(member(X, ListaFichas)), !,
+      append(ListaFichas, [X], ListaAux),
+      generar_bolsa(ListaAux, ListaFichasOut).
+
+generar_bolsa(ListaFichas, ListaFichasOut):-
+%Considera el caso en el que la ficha se encuentra en la bolsa
+      ficha(X),
+      member(X, ListaFichas),
+      max_ficha_en_bolsa(ListaFichas, X, 0, NumFichasColorOut),
+      NumFichasColorOut < 20, !,
+      append(ListaFichas, [X], ListaAux),
+      generar_bolsa(ListaAux, ListaFichasOut).
+
+generar_bolsa(ListaFichasOut, ListaFichasOut).
+
+%Reglas para contar el número de veces que aparece una ficha en una lista
+max_ficha_en_bolsa(ListaFichas, Ficha, NumFichasColor, NumFichasColorOut):-
+%Considera el caso en el que la ficha es igual
+      ListaFichas = [FichaAux|MasFichas],
+      Ficha = FichaAux, !,
+      NumFichasColorAux is NumFichasColor+1,
+      max_ficha_en_bolsa(MasFichas, Ficha, NumFichasColorAux, NumFichasColorOut).
+max_ficha_en_bolsa(ListaFichas, Ficha, NumFichasColor, NumFichasColorOut):-
+%Considera el caso en el que la ficha no es igual
+      ListaFichas = [FichaAux|MasFichas],
+      Ficha \= FichaAux, !,
+      max_ficha_en_bolsa(MasFichas, Ficha, NumFichasColor, NumFichasColorOut).
+max_ficha_en_bolsa([], _, NumFichasColorOut, NumFichasColorOut).
