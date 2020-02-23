@@ -124,3 +124,9 @@ generar_factorias_aux(NumFactorias, ListaFactorias, ListaFactoriasOut):-
    generar_factorias_aux(NumFactoriasAux, ListaFactoriasAux, ListaFactoriasOut).
 %Se devuelve la lista obtenida de factorias
 generar_factorias_aux(_, ListaFactoriasOut, ListaFactoriasOut).
+
+%generar lineapatrones
+lineapatrones([[],[],[],[],[]]).
+
+%generar pared
+pared([[],[],[],[],[]]).
