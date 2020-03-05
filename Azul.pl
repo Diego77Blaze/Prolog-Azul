@@ -30,6 +30,7 @@ ficha('R'). %Ficha Rojo
 ficha('O'). %Ficha Naranja
 factoria(['_','_','_','_']).
 
+
 %Regla para seleccionar el n�mero de jugadores de la partida
 pedir_numero_jugadores(NumJugadores):-
       repeat,
@@ -125,8 +126,39 @@ generar_factorias_aux(NumFactorias, ListaFactorias, ListaFactoriasOut):-
 %Se devuelve la lista obtenida de factorias
 generar_factorias_aux(_, ListaFactoriasOut, ListaFactoriasOut).
 
+rellenar_factorias_generadas(ListaFactorias, ListaFactoriasOut, Bolsa, BolsaOut):-
+rellenar_factorias_generadas(ListaFactorias, ListaFactoriasOut, Bolsa, BolsaOut):-
+    ListaFactorias = [PrimeraFactoria|RestoFactorias],
+    rellenarFactorias(PrimeraFactoria, FactoriaOut, Bolsa, BolsaOutAux),
+    append(FactoriaOut,[], FactoriasCompletas), !,
+    rellenar_factorias_generadas(RestoFactorias, FactoriasCompletas, BolsaOutAux, BolsaOut).
+
+rellenar_factorias_generadas(ListaFactoriasOut, ListaFactoriasOut, BolsaOut, BolsaOut).
+
+%Mostrar fichas de una factoria
+mostrar_fichas(Factoria):-
+    Factoria = [Primera|Resto],
+    write(X), n1,
+    mostrar_fichas(Resto).
+
+    
+    
 %generar lineapatrones
 lineapatrones([[],[],[],[],[]]).
 
 %generar pared
 pared([[],[],[],[],[]]).
+
+
+%generar SUPERMATRIZ
+generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
+    lista_aux = [], !,
+    generar_bolsa([],Bolsa),
+    generar_factorias(NumJugadores, ListaFactorias),
+    rellenar
+    generar_listaJugadores(),
+    lista_datos_comunes is [Bolsa, ListaFactorias, []),
+    append (Lista_aux, Lista_datos_comunes, Lista_aux2),
+    append (Lista_aux2, Lista_Jugadores, Lista_aux3).
+    
+generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
