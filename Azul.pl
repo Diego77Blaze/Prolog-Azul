@@ -28,8 +28,8 @@ ficha('B'). %Ficha Blanco
 ficha('N'). %Ficha Negro
 ficha('R'). %Ficha Rojo
 ficha('O'). %Ficha Naranja
-factoria(['_','_','_','_']).
-
+%factoria(['_','_','_','_']).
+factoria([]).
 
 %Regla para seleccionar el n�mero de jugadores de la partida
 pedir_numero_jugadores(NumJugadores):-
@@ -101,7 +101,7 @@ rellenarFactorias(FactoriaAux,FactoriaOut,BolsaIn,BolsaOut):-
 
 rellenarFactorias(FactOut,FactOut,BolsaOut,BolsaOut).
 
-%ejemplo de uso: rellenarFactorias(X,Y,[1,2,3,4,5,4],Z). siendo Y la factoria rellena y z la bolsa con los elementos metidos en la factoria eliminados y la lista siendo la bolsa inicial.
+%ejemplo de uso: rellenarFactorias(X,Y,[1,2,3,4,5,4],Z). siendo X es la factoria vacía, Y la factoria rellena y z la bolsa con los elementos metidos en la factoria eliminados y la lista siendo la bolsa inicial.
 
 %Reglas para generar las factorias
 generar_factorias(NumJugadores, ListaOut):-
@@ -126,14 +126,14 @@ generar_factorias_aux(NumFactorias, ListaFactorias, ListaFactoriasOut):-
 %Se devuelve la lista obtenida de factorias
 generar_factorias_aux(_, ListaFactoriasOut, ListaFactoriasOut).
 
-rellenar_factorias_generadas(ListaFactorias, ListaFactoriasOut, Bolsa, BolsaOut):-
-rellenar_factorias_generadas(ListaFactorias, ListaFactoriasOut, Bolsa, BolsaOut):-
+%Rellena todas las factorias
+rellenar_factorias_generadas(ListaFactorias, ListaFactoriasAux, ListaFactoriasOut, Bolsa, BolsaOut):-
     ListaFactorias = [PrimeraFactoria|RestoFactorias],
     rellenarFactorias(PrimeraFactoria, FactoriaOut, Bolsa, BolsaOutAux),
-    append(FactoriaOut,[], FactoriasCompletas), !,
-    rellenar_factorias_generadas(RestoFactorias, FactoriasCompletas, BolsaOutAux, BolsaOut).
+    append(ListaFactoriasAux,[FactoriaOut],FactoriasCompletas), !,
+    rellenar_factorias_generadas(RestoFactorias, FactoriasCompletas, ListaFactoriasOut, BolsaOutAux, BolsaOut).
 
-rellenar_factorias_generadas(ListaFactoriasOut, ListaFactoriasOut, BolsaOut, BolsaOut).
+rellenar_factorias_generadas(_, ListaFactoriasOut, ListaFactoriasOut, BolsaOut, BolsaOut).
 
 %Mostrar fichas de una factoria
 mostrar_fichas(Factoria):-
@@ -141,8 +141,8 @@ mostrar_fichas(Factoria):-
     write(X), n1,
     mostrar_fichas(Resto).
 
-    
-    
+
+
 %generar lineapatrones
 lineapatrones([[],[],[],[],[]]).
 
@@ -151,14 +151,14 @@ pared([[],[],[],[],[]]).
 
 
 %generar SUPERMATRIZ
-generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
-    lista_aux = [], !,
-    generar_bolsa([],Bolsa),
-    generar_factorias(NumJugadores, ListaFactorias),
-    rellenar
-    generar_listaJugadores(),
-    lista_datos_comunes is [Bolsa, ListaFactorias, []),
-    append (Lista_aux, Lista_datos_comunes, Lista_aux2),
-    append (Lista_aux2, Lista_Jugadores, Lista_aux3).
-    
-generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
+%generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
+%    lista_aux = [], !,
+%    generar_bolsa([],Bolsa),
+%    generar_factorias(NumJugadores, ListaFactorias),
+%    rellenar
+%    generar_listaJugadores(),
+%    lista_datos_comunes is [Bolsa, ListaFactorias, []),
+%    append (Lista_aux, Lista_datos_comunes, Lista_aux2),
+%    append (Lista_aux2, Lista_Jugadores, Lista_aux3).
+
+%generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
