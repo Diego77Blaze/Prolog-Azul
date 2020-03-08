@@ -127,7 +127,6 @@ generar_factorias_aux(NumFactorias, ListaFactorias, ListaFactoriasOut):-
 generar_factorias_aux(_, ListaFactoriasOut, ListaFactoriasOut).
 
 rellenar_factorias_generadas(ListaFactorias, ListaFactoriasOut, Bolsa, BolsaOut):-
-rellenar_factorias_generadas(ListaFactorias, ListaFactoriasOut, Bolsa, BolsaOut):-
     ListaFactorias = [PrimeraFactoria|RestoFactorias],
     rellenarFactorias(PrimeraFactoria, FactoriaOut, Bolsa, BolsaOutAux),
     append(FactoriaOut,[], FactoriasCompletas), !,
@@ -140,6 +139,31 @@ mostrar_fichas(Factoria):-
     Factoria = [Primera|Resto],
     write(X), n1,
     mostrar_fichas(Resto).
+    
+%Obtener maximo de factorias en partida
+obtener_Max_Factorias([], Resultado):-
+    Restultado is 0.
+    
+obtener_Max_Factorias([X|Y], Resultado):-
+   len(Y, R),
+   Resultado is R+1.
+
+%Pedir una factoria valida de donde sacar ficha
+pedir_Factoria(ListaFactorias, NumFactoria):-
+      repeat,
+      write('Introduce el numero de la factoria que quieras elegir: '),
+      read(NumFactoria),
+      obtener_Max_Factorias(ListaFactorias, MaxFactorias),
+      ((NumFactoria >= 1, NumFactoria =< MaxFactorias, !);
+      writeln('Dato no valido, vuelva a intentarlo'),false).
+      
+pedir_numero_jugadores(ListaColores, ColorSeleccionado):-
+      repeat,
+      write('Introduce el color deseado: '),
+      read(ColorSeleccionado),
+      ((member(ColorSeleccionado, ListaColores), !);
+      writeln('Color no valido, vuelva a intentarlo'),false).
+      
 
     
     
