@@ -141,23 +141,17 @@ mostrar_fichas(Factoria):-
     write(X), n1,
     mostrar_fichas(Resto).
 
-%Obtener maximo de factorias en partida
-obtener_Max_Factorias([], Resultado):-
-    Restultado is 0.
 
-obtener_Max_Factorias([X|Y], Resultado):-
-   len(Y, R),
-   Resultado is R+1.
-
-%Pedir una factoria valida de donde sacar ficha
+%Pedir una factoria valida de donde sacar ficha FALTA DAR LA POSICION PEDIDA
 pedir_Factoria(ListaFactorias, NumFactoria):-
       repeat,
       write('Introduce el numero de la factoria que quieras elegir: '),
       read(NumFactoria),
-      obtener_Max_Factorias(ListaFactorias, MaxFactorias),
+      length(ListaFactorias, MaxFactorias),
       ((NumFactoria >= 1, NumFactoria =< MaxFactorias, !);
       writeln('Dato no valido, vuelva a intentarlo'),false).
 
+%Pedir un color válido de la lista de colores
 pedir_Color(ListaColores, ColorSeleccionado):-
       repeat,
       write('Introduce el color deseado: '),
