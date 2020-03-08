@@ -158,7 +158,7 @@ pedir_Factoria(ListaFactorias, NumFactoria):-
       ((NumFactoria >= 1, NumFactoria =< MaxFactorias, !);
       writeln('Dato no valido, vuelva a intentarlo'),false).
 
-pedir_numero_jugadores(ListaColores, ColorSeleccionado):-
+pedir_Color(ListaColores, ColorSeleccionado):-
       repeat,
       write('Introduce el color deseado: '),
       read(ColorSeleccionado),
