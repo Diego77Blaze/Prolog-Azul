@@ -218,3 +218,31 @@ pared([[],[],[],[],[]]).
 %    append (Lista_aux2, Lista_Jugadores, Lista_aux3).
 
 %generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
+
+rellenarPatrones(Fila,Cantidad,Color,PatronIn,PatronOut):-
+   %fila es el valor de la fila al que introducir el valor,
+   %cantidad es el numero de fichas que quieres introducir,
+   %color es el color del que quieres rellenar el patron,
+   %PatternIn es le patron de entrada con todas las filas
+   %y PatternOut es el patron de salida con las fichas nuevas introducidas
+   nth0(Fila,PatronIn,FilaElegida),
+
+   (((Fila+1 > Cantidad),Aux is Cantidad) ; ((Fila+1 =< Cantidad),Aux is Fila+1)), %si la cantidad de fichas es mayor que la fila solo metera la cantidad de fichas correspondiente a la fila, sino metera los colores que haya dicho que quiere introducir
+   length(FilaElegida,FichasDePatron),
+   FichasaAnadir is Aux - FichasDePatron,
+   rellenarPatron(FichasaAnadir,Color,FilaElegida,PatronOutAux) , !,
+   nth0(Fila,PatronIn,_,RestoPatrones),
+   nth0(Fila,PatronOut,PatronOutAux,RestoPatrones)
+   .
+
+rellenarPatrones(_,_,_,PatronOut,PatronOut).
+
+
+rellenarPatron(Cantidad,Color,PatronIn,PatronOut):-
+   %llena la lista que le pasa la funcion de fillPatterns con la cantidad que le pasa, devuelve solo una lista con la cantidad especifica de valores eintroducido
+   (Cantidad\=0),
+   FilaRellena=[Color|PatronIn],
+   CantidadAux is Cantidad-1,
+   rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut)
+   .
+rellenarPatron(_,_,PatronOut,PatronOut).
