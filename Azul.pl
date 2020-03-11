@@ -181,7 +181,11 @@ get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
 
 get_lista_colores(_, ListaColoresOut, ListaColoresOut).
 
-
+%Mostrar los elementos de una lista
+show_lista(Lista):-
+      Lista = [Primero|Resto],
+      write(Primero), write(' '),
+      show_lista(Resto).
 
 
 %generar lineapatrones
