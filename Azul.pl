@@ -137,7 +137,7 @@ rellenar_factorias_generadas(_, ListaFactoriasOut, ListaFactoriasOut, BolsaOut, 
 
 %Mostrar fichas de una factoria
 imprimirLista(Lista):-
-      Lista = [Primera|Resto],
+    Lista = [Primera|Resto],
     write(Primera), write(' '),
     imprimirLista(Resto).
 
@@ -152,31 +152,31 @@ pedir_Factoria(ListaFactorias, NumFactoria):-
       length(ListaFactorias, MaxFactorias),
       ((NumFactoria >= 1, NumFactoria =< MaxFactorias+1, !);
       writeln('Dato no valido, vuelva a intentarlo'),false).
-
+      
+%Obtiene la lista de fichas de una factoria
 coger_Factoria(ListaFactorias, NumFactoria, FactoriaOut):-
       nth1(NumFactoria, ListaFactorias, FactoriaOut).
 
 %Pedir un color válido de la lista de colores
 pedir_Color(ListaColores, ColorSeleccionado):-
       repeat,
-      write('Introduce el color deseado: '),
+      write('\nIntroduce el color deseado: '),
       read(ColorSeleccionado),
       ((member(ColorSeleccionado, ListaColores), !);
       writeln('Color no valido, vuelva a intentarlo'),false).
 
-
-
+%Distribuye los elementos de una factoria en distintas listas de acuerdo al color seleccionado
 coger_Color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):- 
       ListaColores = [Primero|Resto],
       member(ColorSeleccionado, Primero),
-      append([Primero], ListaColor, ListaColorAux), !,
+      append([Primero], ListaColor, ListaColorAux),
       coger_Color(Resto, ColorSeleccionado, ListaColorAux, ListaColorOut, CentroMesa, CentroMesaOut).
 
 coger_Color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):-
       ListaColores = [Primero|Resto],
       member(ColorSeleccionado, Primero),
       not(member(ColorSeleccionado, Primero)),
-      append([Primero], CentroMesa, CentroMesaAux), !,
+      append([Primero], CentroMesa, CentroMesaAux),
       coger_Color(Resto, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesaAux, CentroMesaOut).
 
 coger_Color(_, _, ListaColorOut, ListaColorOut, CentroMesaOut, CentroMesaOut).
