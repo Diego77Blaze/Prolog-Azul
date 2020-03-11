@@ -138,7 +138,7 @@ rellenar_factorias_generadas(_, ListaFactoriasOut, ListaFactoriasOut, BolsaOut, 
 %Mostrar fichas de una factoria
 mostrar_fichas(Factoria):-
     Factoria = [Primera|Resto],
-    write(X), n1,
+    write(Primera), write(' '),
     mostrar_fichas(Resto).
 
 
@@ -158,6 +158,20 @@ pedir_Color(ListaColores, ColorSeleccionado):-
       read(ColorSeleccionado),
       ((member(ColorSeleccionado, ListaColores), !);
       writeln('Color no valido, vuelva a intentarlo'),false).
+
+%Generar lista de colores a partir de las fichas de una factoria
+get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
+      Factoria = [Primero|Resto],
+      \+(member(Primero, ListaColores)),
+      append(ListaColores, [Primero], ListaColoresAux),
+      get_lista_colores(Resto, ListaColoresAux, ListaColoresOut).
+      
+get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
+      Factoria = [Primero|Resto],
+      (member(Primero, ListaColores)),
+      get_lista_colores(Resto, ListaColores, ListaColoresOut).
+
+get_lista_colores(_, ListaColoresOut, ListaColoresOut).
 
 
 
