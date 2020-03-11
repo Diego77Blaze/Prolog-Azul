@@ -210,27 +210,32 @@ suelo([]).
 
 %generar la supermatriz del juego
 generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
-    is_empty(Lista_aux),
+    not(member(_,Lista_aux)), !, %Para finalizar la recursividad si se han generado todos los elementos de la supermatriz
     generar_bolsa([],Bolsa),
     generar_factorias(NumJugadores, ListaFactorias),
     rellenar_factorias_generadas(ListaFactorias, [], ListaFactoriasAux, Bolsa, BolsaAux),
     append(ListaFactoriasAux, [], ListaFactoriasAux2), %Incluye el centro de la mesa
-    Lista_datos_comunes is ([BolsaAux, ListaFactoriasAux2, []]), %Bolsa, Factorias, Centro y Caja
+    Lista_datos_comunes = ([BolsaAux, ListaFactoriasAux2, []]), %Bolsa, Factorias, Centro y Caja
     generar_lista_datos_jugador(NumJugadores, [], Lista_datos_jugador),
-    SupermatrizAux is ([Lista_datos_comunes | [Lista_datos_jugador]]),
-    generar_supermatriz(NumJugadores, SupermatrizAux, Supermatriz).
+    append(Lista_aux, [Lista_datos_comunes], Lista_aux2),
+    append(Lista_aux2, [Lista_datos_jugador], Lista_aux3),
+    %SupermatrizAux = ([Lista_datos_comunes | [Lista_datos_jugador]]),
+    %writeln(SupermatrizAux),
+    %generar_supermatriz(NumJugadores, SupermatrizAux, Supermatriz).
+    generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
 
 generar_supermatriz(_, Supermatriz, Supermatriz).
 
 %genera la lista de los datos de cada jugador
 generar_lista_datos_jugador(NumJugadores, Lista_datos_jugadorAux, Lista_datos_jugador):-
-    NumJugadores \= 0,
+    NumJugadores \= 0, !,
     lineapatrones(LineasPatrones),
     pared(Pared),
     suelo(Suelo),
-    ListaDatosJugador is ([LineasPatrones, Pared, Suelo]),
-    NumJugadoresAux is NumJugadores-1,
+    ListaDatosJugador = ([LineasPatrones, Pared, Suelo]),
+    NumJugadoresAux is (NumJugadores-1),
     append(Lista_datos_jugadorAux, [ListaDatosJugador], Lista_datos_jugadorAux2),
+    %writeln(Lista_datos_jugadorAux2),
     generar_lista_datos_jugador(NumJugadoresAux, Lista_datos_jugadorAux2, Lista_datos_jugador).
     
 generar_lista_datos_jugador(_, Lista_datos_jugador, Lista_datos_jugador).
