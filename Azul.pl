@@ -205,17 +205,36 @@ lineapatrones([[],[],[],[],[]]).
 %generar pared
 pared([[],[],[],[],[]]).
 
+%generar suelo
+suelo([]).
 
-%generar SUPERMATRIZ
-%generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
-%    lista_aux = [], !,
-%    generar_bolsa([],Bolsa),
-%    generar_factorias(NumJugadores, ListaFactorias),
-%    rellenar
-%    generar_listaJugadores(),
-%    lista_datos_comunes is [Bolsa, ListaFactorias, []),
-%    append (Lista_aux, Lista_datos_comunes, Lista_aux2),
-%    append (Lista_aux2, Lista_Jugadores, Lista_aux3).
+%generar la supermatriz del juego
+generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
+    is_empty(Lista_aux),
+    generar_bolsa([],Bolsa),
+    generar_factorias(NumJugadores, ListaFactorias),
+    rellenar_factorias_generadas(ListaFactorias, [], ListaFactoriasAux, Bolsa, BolsaAux),
+    append(ListaFactoriasAux, [], ListaFactoriasAux2), %Incluye el centro de la mesa
+    Lista_datos_comunes is ([BolsaAux, ListaFactoriasAux2, []]), %Bolsa, Factorias, Centro y Caja
+    generar_lista_datos_jugador(NumJugadores, [], Lista_datos_jugador),
+    SupermatrizAux is ([Lista_datos_comunes | [Lista_datos_jugador]]),
+    generar_supermatriz(NumJugadores, SupermatrizAux, Supermatriz).
+
+generar_supermatriz(_, Supermatriz, Supermatriz).
+
+%genera la lista de los datos de cada jugador
+generar_lista_datos_jugador(NumJugadores, Lista_datos_jugadorAux, Lista_datos_jugador):-
+    NumJugadores \= 0,
+    lineapatrones(LineasPatrones),
+    pared(Pared),
+    suelo(Suelo),
+    ListaDatosJugador is ([LineasPatrones, Pared, Suelo]),
+    NumJugadoresAux is NumJugadores-1,
+    append(Lista_datos_jugadorAux, [ListaDatosJugador], Lista_datos_jugadorAux2),
+    generar_lista_datos_jugador(NumJugadoresAux, Lista_datos_jugadorAux2, Lista_datos_jugador).
+    
+generar_lista_datos_jugador(_, Lista_datos_jugador, Lista_datos_jugador).
+
 
 %generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
 
@@ -232,8 +251,7 @@ rellenarPatrones(Fila,Cantidad,Color,PatronIn,PatronOut):-
    FichasaAnadir is Aux - FichasDePatron,
    rellenarPatron(FichasaAnadir,Color,FilaElegida,PatronOutAux) , !,
    nth0(Fila,PatronIn,_,RestoPatrones),
-   nth0(Fila,PatronOut,PatronOutAux,RestoPatrones)
-   .
+   nth0(Fila,PatronOut,PatronOutAux,RestoPatrones).
 
 rellenarPatrones(_,_,_,PatronOut,PatronOut).
 
@@ -243,6 +261,6 @@ rellenarPatron(Cantidad,Color,PatronIn,PatronOut):-
    (Cantidad\=0),
    FilaRellena=[Color|PatronIn],
    CantidadAux is Cantidad-1,
-   rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut)
-   .
+   rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut).
+   
 rellenarPatron(_,_,PatronOut,PatronOut).
