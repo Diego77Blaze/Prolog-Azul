@@ -136,10 +136,12 @@ rellenar_factorias_generadas(ListaFactorias, ListaFactoriasAux, ListaFactoriasOu
 rellenar_factorias_generadas(_, ListaFactoriasOut, ListaFactoriasOut, BolsaOut, BolsaOut).
 
 %Mostrar fichas de una factoria
-mostrar_fichas(Factoria):-
-    Factoria = [Primera|Resto],
+imprimirLista(Lista):-
+      Lista = [Primera|Resto],
     write(Primera), write(' '),
-    mostrar_fichas(Resto).
+    imprimirLista(Resto).
+
+imprimirLista(_).
 
 
 %Pedir una factoria valida de donde sacar ficha
