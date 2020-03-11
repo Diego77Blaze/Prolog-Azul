@@ -142,7 +142,7 @@ mostrar_fichas(Factoria):-
     mostrar_fichas(Resto).
 
 
-%Pedir una factoria valida de donde sacar ficha FALTA DAR LA POSICION PEDIDA
+%Pedir una factoria valida de donde sacar ficha
 pedir_Factoria(ListaFactorias, NumFactoria):-
       repeat,
       write('Introduce el numero de la factoria que quieras elegir: '),
@@ -151,13 +151,21 @@ pedir_Factoria(ListaFactorias, NumFactoria):-
       ((NumFactoria >= 1, NumFactoria =< MaxFactorias, !);
       writeln('Dato no valido, vuelva a intentarlo'),false).
 
+coger_Factoria(ListaFactorias, NumFactoria, FactoriaOut):-
+      nth1(NumFactoria, ListaFactorias, FactoriaOut).
+
 %Pedir un color válido de la lista de colores
-pedir_Color(ListaColores, ColorSeleccionado):-
+pedir_Color(ListaColores, NumColor):-
       repeat,
-      write('Introduce el color deseado: '),
-      read(ColorSeleccionado),
-      ((member(ColorSeleccionado, ListaColores), !);
+      write('Introduce la posicion del color deseado: '),
+      read(NumColor),
+      length(ListaColores, Max),
+      ((NumColor >= 1, NumColor =< Max, !);
       writeln('Color no valido, vuelva a intentarlo'),false).
+
+coger_Color(ListaColores, NumColor, ColorOut):-
+      nth1(NumColor, ListaColores, ColorOut).
+
 
 %Generar lista de colores a partir de las fichas de una factoria
 get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
