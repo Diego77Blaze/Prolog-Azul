@@ -145,7 +145,9 @@ imprimirLista(_).
 
 imprimirListaConCosas(Lista):-
       Lista = [PrimeraLista|RestoListas],
+      write("|"),
       imprimirLista(PrimeraLista),
+      write("|"),
       imprimirListaConCosas(RestoListas).
 
 imprimirListaConCosas(_).
