@@ -152,7 +152,6 @@ imprimirListaConCosas(Lista):-
 
 imprimirListaConCosas(_).
 
-
 %Pedir una factoria valida de donde sacar ficha
 pedir_Factoria(ListaFactorias, NumFactoria):-
       repeat,
@@ -161,7 +160,7 @@ pedir_Factoria(ListaFactorias, NumFactoria):-
       length(ListaFactorias, MaxFactorias),
       ((NumFactoria >= 1, NumFactoria =< MaxFactorias+1, !);
       writeln('Dato no valido, vuelva a intentarlo'),false).
-      
+
 %Obtiene la lista de fichas de una factoria
 coger_Factoria(ListaFactorias, NumFactoria, FactoriaOut):-
       nth1(NumFactoria, ListaFactorias, FactoriaOut).
@@ -175,7 +174,7 @@ pedir_Color(ListaColores, ColorSeleccionado):-
       writeln('Color no valido, vuelva a intentarlo'),false).
 
 %Distribuye los elementos de una factoria en distintas listas de acuerdo al color seleccionado
-coger_Color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):- 
+coger_Color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):-
       ListaColores = [Primero|Resto],
       member(ColorSeleccionado, Primero),
       append([Primero], ListaColor, ListaColorAux),
@@ -197,7 +196,7 @@ get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
       \+(member(Primero, ListaColores)),
       append(ListaColores, [Primero], ListaColoresAux),
       get_lista_colores(Resto, ListaColoresAux, ListaColoresOut).
-      
+
 get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
       Factoria = [Primero|Resto],
       (member(Primero, ListaColores)),
@@ -257,7 +256,7 @@ generar_lista_datos_jugador(NumJugadores, Lista_datos_jugadorAux, Lista_datos_ju
     append(Lista_datos_jugadorAux, [ListaDatosJugador], Lista_datos_jugadorAux2),
     %writeln(Lista_datos_jugadorAux2),
     generar_lista_datos_jugador(NumJugadoresAux, Lista_datos_jugadorAux2, Lista_datos_jugador).
-    
+
 generar_lista_datos_jugador(_, Lista_datos_jugador, Lista_datos_jugador).
 
 
@@ -297,8 +296,6 @@ rellenarPatron(Cantidad,Color,PatronIn,PatronOut):-
    rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut)
    .
 rellenarPatron(_,_,PatronOut,PatronOut).
-<<<<<<< HEAD
-=======
 
 rellenarSuelo(SueloIn,SueloOut,AnadiralSuelo,Color,BolsaIn,BolsaOut):-
    length(SueloIn,LongitudSuelo),
@@ -307,7 +304,3 @@ rellenarSuelo(SueloIn,SueloOut,AnadiralSuelo,Color,BolsaIn,BolsaOut):-
    (AnadiralSuelo\=0,Suelo is AnadiralSuelo-1,SueloOutAux=[Color|SueloIn],rellenarSuelo(SueloOutAux,SueloOut,Suelo,Color,BolsaIn,BolsaOut),!)
    .
 rellenarSuelo(SueloOut,SueloOut,_,_,BolsaOut,BolsaOut).
-
-
-
->>>>>>> 0fae269c95b4aa59253bdb9229a67fe1fb0f48fa
