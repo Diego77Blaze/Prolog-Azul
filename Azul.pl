@@ -150,7 +150,6 @@ imprimirListaConCosas(Lista):-
 
 imprimirListaConCosas(_).
 
-
 %Pedir una factoria valida de donde sacar ficha
 pedir_Factoria(ListaFactorias, NumFactoria):-
       repeat,
@@ -269,7 +268,7 @@ rellenarPatrones(_,_,_,PatronOut,PatronOut).
 
 
 rellenarPatron(Cantidad,Color,PatronIn,PatronOut):-
-   %llena la lista que le pasa la funcion de fillPatterns con la cantidad que le pasa, devuelve solo una lista con la cantidad especifica de valores eintroducido
+   %llena la lista que le pasa la funcion de rellenarPatrones con la cantidad que le pasa, devuelve solo una lista con la cantidad especifica de valores eintroducido
    (Cantidad\=0),
    FilaRellena=[Color|PatronIn],
    CantidadAux is Cantidad-1,
