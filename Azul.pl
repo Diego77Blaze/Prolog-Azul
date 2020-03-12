@@ -262,32 +262,48 @@ generar_lista_datos_jugador(_, Lista_datos_jugador, Lista_datos_jugador).
 
 %generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
 
-rellenarPatrones(Fila,Cantidad,Color,PatronIn,PatronOut):-
+
+%ejemplo de ejecucion:  rellenarPatrones(1,5,azul,[[],[],[blanco],[],[]],X,[rojo,rojo,blanco,azul,verde,negro],Y,[],Z).
+rellenarPatrones(Fila,Cantidad,Color,PatronIn,PatronOut,SueloIn,SueloOut,BolsaIn,BolsaOut):-
    %fila es el valor de la fila al que introducir el valor,
    %cantidad es el numero de fichas que quieres introducir,
    %color es el color del que quieres rellenar el patron,
    %PatternIn es le patron de entrada con todas las filas
    %y PatternOut es el patron de salida con las fichas nuevas introducidas
+   %SueloIn es el suelo del jugador del turno actual
+   %SueloOut es el suelo actualizado del jugador  del turno
+   %BolsaIn es la bolsa donde estan las fichas
+   %BolsaOut es la nueva bolsa con la fichas incluidas que no caben en el suelo
    nth0(Fila,PatronIn,FilaElegida),
 
-   (((Fila+1 > Cantidad),Aux is Cantidad) ; ((Fila+1 =< Cantidad),Aux is Fila+1)), %si la cantidad de fichas es mayor que la fila solo metera la cantidad de fichas correspondiente a la fila, sino metera los colores que haya dicho que quiere introducir
+   (((Fila+1 > Cantidad),Aux is Cantidad) ;
+    ((Fila+1 =< Cantidad),Aux is Fila+1,AlSuelo is Cantidad-Aux,rellenarSuelo(SueloIn,SueloOut,AlSuelo,Color,BolsaIn,BolsaOut))), %si la cantidad de fichas es mayor que la fila solo metera la cantidad de fichas correspondiente a la fila, sino metera los colores que haya dicho que quiere introducir
    length(FilaElegida,FichasDePatron),
    FichasaAnadir is Aux - FichasDePatron,
    rellenarPatron(FichasaAnadir,Color,FilaElegida,PatronOutAux) , !,
    nth0(Fila,PatronIn,_,RestoPatrones),
-   nth0(Fila,PatronOut,PatronOutAux,RestoPatrones).
+   nth0(Fila,PatronOut,PatronOutAux,RestoPatrones)
+   .
 
-rellenarPatrones(_,_,_,PatronOut,PatronOut).
+rellenarPatrones(_,_,_,PatronOut,PatronOut,SueloOut,SueloOut,BolsaOut,BolsaOut).
 
 
 rellenarPatron(Cantidad,Color,PatronIn,PatronOut):-
-   %llena la lista que le pasa la funcion de rellenarPatrones con la cantidad que le pasa, devuelve solo una lista con la cantidad especifica de valores eintroducido
+   %llena la lista que le pasa la funcion de fillPatterns con la cantidad que le pasa, devuelve solo una lista con la cantidad especifica de valores eintroducido
    (Cantidad\=0),
    FilaRellena=[Color|PatronIn],
    CantidadAux is Cantidad-1,
-   rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut).
-   
+   rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut)
+   .
 rellenarPatron(_,_,PatronOut,PatronOut).
+
+rellenarSuelo(SueloIn,SueloOut,AnadiralSuelo,Color,BolsaIn,BolsaOut):-
+   length(SueloIn,LongitudSuelo),
+   AnadiralSuelo\=0,
+   (LongitudSuelo==7,Suelo is AnadiralSuelo-1,BolsaOutAux=[Color|BolsaIn],rellenarSuelo(SueloIn,SueloOut,Suelo,Color,BolsaOutAux,BolsaOut),!);
+   (AnadiralSuelo\=0,Suelo is AnadiralSuelo-1,SueloOutAux=[Color|SueloIn],rellenarSuelo(SueloOutAux,SueloOut,Suelo,Color,BolsaIn,BolsaOut),!)
+   .
+rellenarSuelo(SueloOut,SueloOut,_,_,BolsaOut,BolsaOut).
 
 
 
