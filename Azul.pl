@@ -143,6 +143,13 @@ imprimirLista(Lista):-
 
 imprimirLista(_).
 
+imprimirListaConCosas(Lista):-
+      Lista = [PrimeraLista|RestoListas],
+      imprimirLista(PrimeraLista),
+      imprimirListaConCosas(RestoListas).
+
+imprimirListaConCosas(_).
+
 
 %Pedir una factoria valida de donde sacar ficha
 pedir_Factoria(ListaFactorias, NumFactoria):-
@@ -269,3 +276,6 @@ rellenarPatron(Cantidad,Color,PatronIn,PatronOut):-
    rellenarPatron(CantidadAux,Color,FilaRellena,PatronOut).
    
 rellenarPatron(_,_,PatronOut,PatronOut).
+
+
+
