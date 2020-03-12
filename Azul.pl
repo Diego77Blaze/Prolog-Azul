@@ -206,16 +206,27 @@ get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
 get_lista_colores(_, ListaColoresOut, ListaColoresOut).
 
 
-
-
 %generar lineapatrones
 lineapatrones([[],[],[],[],[]]).
 
 %generar pared
 pared([[],[],[],[],[]]).
 
+
 %generar suelo
 suelo([]).
+
+%comprobar si lista es vacia
+estaVacia(Lista):-
+      not(member(_,Lista)).
+
+estaVaciaListadeListas(ListadeListas):-
+      ListadeListas = [Primero|Resto],
+      estaVacia(Primero),
+      estaVaciaListadeListas(Resto).
+
+estaVaciaListadeListas(_).
+
 
 %generar la supermatriz del juego
 generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
