@@ -305,5 +305,14 @@ rellenarSuelo(SueloIn,SueloOut,AnadiralSuelo,Color,BolsaIn,BolsaOut):-
    .
 rellenarSuelo(SueloOut,SueloOut,_,_,BolsaOut,BolsaOut).
 
+comprobarLongLista(LineaDeSuelo):-
+      length(LineaDeSuelo,LongitudSuelo),
+      (5 == LongitudSuelo).
+
+comprobarFinDeJuego(Suelo):-
+      Suelo = [PrimeraLinea|RestoLineas],
+      comprobarLongLista(PrimeraLinea),
+      comprobarFinDeJuego(RestoLineas).
+
 
 
