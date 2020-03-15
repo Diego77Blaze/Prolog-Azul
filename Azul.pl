@@ -1,4 +1,4 @@
-% Autor:
+﻿% Autor:
 % Fecha: 20/02/2020
 
 %lista de la bolsa de fichas (20 unidades de cada ficha)   y 100 fichas en total (azul amarillo rojo negro y blanco)
@@ -651,11 +651,46 @@ realizar_llenado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, Num
 
 realizar_llenado_paredes_jugadores(_,_,_,_, SupermatrizOut, SupermatrizOut).
 
-comprobarLongLista(LineaDeSuelo):-
-      length(LineaDeSuelo,LongitudSuelo),
-      (5 == LongitudSuelo).
+comprobarLongLista(LineaPared, ValorAux, _, Valor):-
+    length(Lista, LongitudLista),
+    LongitudLista = 5,
+    ValorAux = 2,
+    ValorAux2 is 0, %Lista mide 5 elementos
+    comprobarLongLista(Lista, ValorAux2, ValorAux2, Valor),!.
 
-comprobarFinDeJuego(Suelo):-
-      Suelo = [PrimeraLinea|RestoLineas],
-      comprobarLongLista(PrimeraLinea),
-      comprobarFinDeJuego(RestoLineas).
+comprobarLongLista(LineaPared, ValorAux, _, Valor):-
+    length(Lista, LongitudLista),
+    LongitudLista \= 5,
+    ValorAux = 2,
+    ValorAux2 is 1, %Lista no mide 5 elementos
+    comprobarLongLista(Lista, ValorAux2, ValorAux2, Valor),!.
+
+comprobarLongLista(_,_,Valor,Valor).
+
+comprobarFinDeJuego(Pared, ValorAux, _, Valor):-%Situación en la que una de las lineas no tenga 5 elem
+    ValorAux = 1, %Lista sigue sin tener 5 elem
+    length(Pared, LongitudPared),
+    LongitudPared \=5,
+    Pared = [PrimeraLinea|RestoLineas],
+    comprobarLongLista(PrimeraLinea, 2, _, ValorAux2),
+    valorAux2 = 1,
+    comprobarFinDeJuego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
+
+comprobarFinDeJuego(Pared, ValorAux, _,Valor):-
+    ValorAux = 1, %Lista sigue sin tener 5 elem
+    length(Pared, LongitudPared),
+    LongitudPared =5,
+    ValorAux2 = -1,
+    ValorAux3 = 1,
+    comprobarFinDeJuego(_, ValorAux2, ValorAux3, Valor),!.
+
+comprobarFinDeJuego(Pared, ValorAux, _, Valor):-
+    ValorAux = 1, %Lista sigue sin tener 5 elem
+    length(Pared, LongitudPared),
+    LongitudPared \=5,
+    Pared = [PrimeraLinea|RestoLineas],
+    comprobarLongLista(PrimeraLinea, 2, _, ValorAux2),
+    valorAux2 = 0,
+    comprobarFinDeJuego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
+
+comprobarFinDeJuego(_,_,Valor,Valor).
