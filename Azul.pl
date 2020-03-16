@@ -230,16 +230,20 @@ estaVacia(Lista):-
 
 %Comprueba que una lista está vacía
 isEmpty(Lista, ValorAux, _, Valor):-
+%ValorAux se utiliza como valor de parada de las llamadas recursivas con un valor distinto de 0 (lista no vacía) y 1 (lista vacía)
     length(Lista, LongitudLista),
     LongitudLista = 0,
-    ValorAux = 2,
+    ValorAux \= 1,
+    ValorAux \= 0,
     ValorAux2 is 1, %Lista está vacía
     isEmpty(Lista, ValorAux2, ValorAux2, Valor),!.
 
 isEmpty(Lista, ValorAux, _, Valor):-
+%ValorAux se utiliza como valor de parada de las llamadas recursivas con un valor distinto de 0 (lista no vacía) y 1 (lista vacía)
     length(Lista, LongitudLista),
     LongitudLista \= 0,
-    ValorAux = 2,
+    ValorAux \= 1,
+    ValorAux \= 0,
     ValorAux2 is 0,  %Lista no está vacía
     isEmpty(Lista, ValorAux2, ValorAux2, Valor),!.
 
@@ -651,51 +655,52 @@ realizar_llenado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, Num
 
 realizar_llenado_paredes_jugadores(_,_,_,_, SupermatrizOut, SupermatrizOut).
 
-comprobarLongLista(LineaPared, ValorAux, _, Valor):-
-    length(Lista, LongitudLista),
+%Comprobar que la longitud de una línea de la pared tiene 5 azulejos
+comprobarLongLista(LineaPared, ValorAux, _, Valor):- %Situación en la que tiene 5 azulejos
+    length(LineaPared, LongitudLista),
     LongitudLista = 5,
-    ValorAux = 2,
-    ValorAux2 is 0, %Lista mide 5 elementos
-    comprobarLongLista(Lista, ValorAux2, ValorAux2, Valor),!.
+    ValorAux \= 0,
+    ValorAux \= 1,
+    ValorAux2 is 1, %La lista tiene 5 elementos
+    comprobarLongLista(LineaPared, ValorAux2, ValorAux2, Valor),!.
 
-comprobarLongLista(LineaPared, ValorAux, _, Valor):-
-    length(Lista, LongitudLista),
+comprobarLongLista(LineaPared, ValorAux, _, Valor):- %Situación en la que no tiene 5 azulejos
+    length(LineaPared, LongitudLista),
     LongitudLista \= 5,
-    ValorAux = 2,
-    ValorAux2 is 1, %Lista no mide 5 elementos
-    comprobarLongLista(Lista, ValorAux2, ValorAux2, Valor),!.
+    ValorAux \= 0,
+    ValorAux \= 1,
+    ValorAux2 is 0, %La lista no tiene 5 elementos
+    comprobarLongLista(LineaPared, ValorAux2, ValorAux2, Valor),!.
 
 comprobarLongLista(_,_,Valor,Valor).
 
-comprobarFinDeJuego(Pared, ValorAux, _, Valor):-%Situación en la que una de las lineas no tenga 5 elem
-    ValorAux = 1, %Lista sigue sin tener 5 elem
+%Comprueba la finalización o no de una partida
+comprobarFinDeJuego(Pared, ValorAux, _, Valor):-%Situación en la que una de las filas tiene 5 azulejos
+    ValorAux = 0, %Aún no se han encontrado ninguna fila con 5 azulejos
     length(Pared, LongitudPared),
-    LongitudPared \=5,
+    LongitudPared \=0, %Quedan aún más filas
     Pared = [PrimeraLinea|RestoLineas],
     comprobarLongLista(PrimeraLinea, 2, _, ValorAux2),
-    valorAux2 = 1,
+    ValorAux2 = 1, %La fila se encuentra completa
     comprobarFinDeJuego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
 
-comprobarFinDeJuego(Pared, ValorAux, _,Valor):-
-    ValorAux = 1, %Lista sigue sin tener 5 elem
+comprobarFinDeJuego(Pared, ValorAux, _,Valor):- %Situación en la que no quedan más filas a comprobar de la pared
+    ValorAux = 0, %Aún no se han encontrado ninguna fila con 5 azulejos
     length(Pared, LongitudPared),
-    LongitudPared =5,
+    LongitudPared = 0, %No quedan más filas
     ValorAux2 = -1,
-    ValorAux3 = 1,
+    ValorAux3 = 0, %No hay ninguna fila completa
     comprobarFinDeJuego(_, ValorAux2, ValorAux3, Valor),!.
 
-comprobarFinDeJuego(Pared, ValorAux, _, Valor):-
-    ValorAux = 1, %Lista sigue sin tener 5 elem
+comprobarFinDeJuego(Pared, ValorAux, _, Valor):- %Situación en la que la fila estudiada de la pared no tiene 5 azulejos
+    ValorAux = 0, %Aún no se han encontrado ninguna fila con 5 azulejos
     length(Pared, LongitudPared),
-    LongitudPared \=5,
+    LongitudPared \=0,%Quedan aún más filas
     Pared = [PrimeraLinea|RestoLineas],
     comprobarLongLista(PrimeraLinea, 2, _, ValorAux2),
-    valorAux2 = 0,
-    comprobarFinDeJuego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
+    ValorAux2 = 0,
+    comprobarFinDeJuego(RestoLineas, ValorAux2, _, Valor),!.
 
-<<<<<<< HEAD
-comprobarFinDeJuego(_,_,Valor,Valor).
-=======
 comprobarFinDeJuego(_,_,Valor,Valor).
 
 %Esta funcion comprueba si la caja, la bolsa, el centro y las factorias estan vacias y actua segun sea conveniente.
@@ -784,4 +789,3 @@ comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,Factorias
    FactoriasIn = FactoriasOut,
    Valor is 4,!
    .
->>>>>>> 3c46c6e6b7241ad593930daa7e8c4cdc57b0fae3
