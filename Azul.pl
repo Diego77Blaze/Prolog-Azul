@@ -506,9 +506,20 @@ main():-
    generar_supermatriz(NumJugadores, [], Supermatriz),
    writeln('Situacion inicial'),
    writeln(Supermatriz),
-   juego(1, 1, NumJugadores, Supermatriz).
+   juego(1, 1, NumJugadores, Supermatriz, Ganador),
+   show_ganador(Ganador).
+   
+show_ganador(Ganador):-
+   Ganador \= -1,
+   write('Ganador jugador '),
+   write(Ganador),
+   writeln('.').
+   
+show_ganador(Ganador):-
+   Ganador = -1,
+   writeln('Empate.').
 
-juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz):-  %Situación en la que la factoria usada no es el centro de la mesa y el número de jugadores no se ha superado por el número de jugador
+juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Situación en la que la factoria usada no es el centro de la mesa y el número de jugadores no se ha superado por el número de jugador
    nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
    nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
    isEmpty_ListaDeListas(Lista_factorias, 1, _, Valor),
@@ -541,10 +552,10 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz):-  %Situación e
    Supermatriz_actualizada = [Datos_generales_actualizados, Datos_jugadores_actualizados],
    writeln(Supermatriz_actualizada),
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
-   juego(NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada),!.
+   juego(NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada, Ganador),!.
 
 
-juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz):-
+juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
    nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
    isEmpty_ListaDeListas(Lista_factorias, 1, _, Valor),
@@ -558,14 +569,79 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz):-
    nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
    length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
    nth1(LongitudListaFactorias, Lista_factoriasAux, Centro, Lista_factorias_sin_centro), %Separación centro del resto de factorias
-   rellenar_factorias_generadas(Lista_factorias_sin_centro, [], ListaFactoriasOut, Bolsa, BolsaOut),
+   comprobarRellenarFactorias(Caja,CajaOut,Bolsa,BolsaOut,Lista_factorias_sin_centro,ListaFactoriasOut,ValorAux),
+   ValorAux \= 0, %Situaciones en las que el juego no ha terminado aún
+   %rellenar_factorias_generadas(Lista_factorias_sin_centro, [], ListaFactoriasOut, Bolsa, BolsaOut),
    nth1(LongitudListaFactorias, Lista_factorias_actualizada, Centro, ListaFactoriasOut), %Unión centro con el resto de factorias
-   Datos_generales_actualizados = [BolsaOut, Lista_factorias_actualizada, Caja],
+   Datos_generales_actualizados = [BolsaOut, Lista_factorias_actualizada, CajaOut],
    Supermatriz_actualizada2 = [Datos_generales_actualizados, Datos_jugadores],
    writeln(Supermatriz_actualizada2),
+   juego(NumJugador, NumJugador, NumJugadores, Supermatriz_actualizada2, Ganador),!.
 
-   juego(NumJugador, NumJugador, NumJugadores, Supermatriz_actualizada2),!.
+juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
+   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
+   isEmpty_ListaDeListas(Lista_factorias, 1, _, Valor),
+   Valor \= 0, %No hay ningún azulejo entre las distintas factorias y el centro de la mesa
+   %NumJugador > NumJugadores, !,
+   realizar_llenado_paredes_jugadores(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Supermatriz, Supermatriz_actualizada),
+   nth0(0,Supermatriz_actualizada,Datos_generalesAux), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,Datos_generalesAux,Lista_factoriasAux), %Cogemos la lista de factorias junto con el centro
+   nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   nth0(0,Datos_generalesAux,Bolsa), %Cogemos la bolsa
+   nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
+   length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
+   nth1(LongitudListaFactorias, Lista_factoriasAux, _, Lista_factorias_sin_centro), %Separación centro del resto de factorias
+   comprobarRellenarFactorias(Caja,_,Bolsa,_,Lista_factorias_sin_centro,_,ValorAux),
+   ValorAux = 0, %Situaciones en las que el juego ha llegado a su fin
+   %nth1(LongitudListaFactorias, Lista_factorias_actualizada, Centro, ListaFactoriasOut), %Unión centro con el resto de factorias
+   %Datos_generales_actualizados = [BolsaOut, Lista_factorias_actualizada, CajaOut],
+   %Supermatriz_actualizada2 = [Datos_generales_actualizados, Datos_jugadores],
+   search_ganador(1, NumJugadorInicial, NumJugador, NumJugadores, Datos_jugadores, GanadorAux),
+   Ganador = GanadorAux,!.
 
+%Busca al ganador de la partida
+search_ganador(_, NumJugadorInicial, NumJugador, _, ListaDatosJugador, Ganador):- %Situación en la que un jugador, que no es el inicial, es el ganador
+   NumJugador \= NumJugadorInicial, %No es el primer jugador al que se le rellena su pared
+   nth1(NumJugador, ListaDatosJugador, DatosJugador),
+   nth1(1, DatosJugador, Pared),
+   comprobarFinDeJuego(Pared, 0, _, Valor),
+   Valor = 1, %Ganador
+   Ganador = NumJugador,!.
+   
+search_ganador(Situacion, NumJugadorInicial, NumJugador, NumJugadores, ListaDatosJugador, Ganador):- %Situación en la que un jugador, que no es el inicial, no es el ganador
+   NumJugador \= NumJugadorInicial, %No es el primer jugador al que se le rellena su pared
+   nth1(NumJugador, ListaDatosJugador, DatosJugador),
+   nth1(1, DatosJugador, Pared),
+   comprobarFinDeJuego(Pared, 0, _, Valor),
+   Valor \= 1, %No es el ganador
+   get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
+   search_ganador(Situacion, NumJugadorInicial, NumSiguienteJugador, NumJugadores, ListaDatosJugador, Ganador),!.
+
+search_ganador(Situacion, NumJugadorInicial, NumJugador, NumJugadores, ListaDatosJugador, Ganador):- %Situación en la que un jugador, es el inicial y es la primera vez que se estudia, no es el ganador
+   NumJugador = NumJugadorInicial, %Es el primer jugador al que se le rellena su pared
+   Situacion \= 0, %Primera vez que se estudia
+   nth1(NumJugador, ListaDatosJugador, DatosJugador),
+   nth1(1, DatosJugador, Pared),
+   comprobarFinDeJuego(Pared, 0, _, Valor),
+   Valor \= 1, %No es el ganador
+   get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
+   search_ganador(0, NumJugadorInicial, NumSiguienteJugador, NumJugadores, ListaDatosJugador, Ganador),!.
+
+search_ganador(Situacion, NumJugadorInicial, NumJugador, _, ListaDatosJugador, Ganador):- %Situación en la que un jugador, es el inicial y es la primera vez que se estudia, es el ganador
+   NumJugador = NumJugadorInicial, %Es el primer jugador al que se le rellena su pared
+   Situacion \= 0, %Primera vez que se estudia
+   nth1(NumJugador, ListaDatosJugador, DatosJugador),
+   nth1(1, DatosJugador, Pared),
+   comprobarFinDeJuego(Pared, 0, _, Valor),
+   Valor = 1, %Es el ganador
+   %get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
+   Ganador = NumJugador,!.
+
+search_ganador(Situacion, NumJugadorInicial, NumJugador, _, _, Ganador):- %Situación en la que un jugador, es el inicial y es la primera vez que se estudia, no es el ganador
+   NumJugador = NumJugadorInicial, %Es el primer jugador al que se le rellena su pared
+   Situacion = 0, %Primera vez que se estudia
+   Ganador = -1,!. %No hay ganador
 
 %Obtiene el siguiente jugador a jugar
 get_siguiente_jugador(NumJugador, NumJugadores, _, NumJugadorOut):-
@@ -648,12 +724,12 @@ realizar_llenado_paredes_jugadores(_,_,_,_, SupermatrizOut, SupermatrizOut).
 %Comprobar que la longitud de una línea de la pared tiene 5 azulejos
 comprobarLongLista(LineaPared, Valor):- %Situación en la que tiene 5 azulejos
     length(LineaPared, LongitudLista),
-    LongitudLista = 5,
+    LongitudLista = 1,
     Valor is 1, !. %La lista tiene 5 elementos
     
 comprobarLongLista(LineaPared, Valor):- %Situación en la que no tiene 5 azulejos
     length(LineaPared, LongitudLista),
-    LongitudLista \= 5,
+    LongitudLista \= 1,
     Valor is 0, !. %La lista no tiene 5 elementos
 
 %Comprueba la finalización o no de una partida
