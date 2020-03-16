@@ -694,3 +694,90 @@ comprobarFinDeJuego(Pared, ValorAux, _, Valor):-
     comprobarFinDeJuego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
 
 comprobarFinDeJuego(_,_,Valor,Valor).
+
+%Esta funcion comprueba si la caja, la bolsa, el centro y las factorias estan vacias y actua segun sea conveniente.
+%Siendo CajaIn la caja actual y CajaOut la caja actualizada al meter fichas a las factorias si es que lo hace
+%Siendo BolsaIn la bolsa actual  y BolsaOut la bolsa actualizada al haber metido las fichas a las factorias
+%FactoriasIn sera una lista de listas vacia en la que meteremos las fichas de la bolsa o la caja en FactoriasOut, que sera las factorias actualizadas
+%CentroIn es la lista de las fichas del centro
+%Valor es el valor que dictara en que situacion nos encontramos
+%Si valor==0 --> La bolsa, la caja y el centro estan vacios. No se puede continuar,se acaba el juego.
+%Si valor==1 --> la caja tiene fichas y la bolsa esta vacia, el centro nos da igual en este caso. Se rellena con la caja directamente.
+%Si valor==2 --> La bolsa tiene fichas y la caja no, el centro tambien da igual. Se rellena con la bolsa.
+%Si valor==3 --> La bolsa y la caja tienen fichas, el centro da igual. Se rellena con la bolsa.
+%Si valor==4 --> La bolsa y la caja estan vacias pero el centro tiene fichas. No hace falta hacer nada.
+
+%Ejemplo para que se meta aqui:
+%comprobarRellenarFactorias([],X,[],Y,[[],[],[],[],[],[]],Z,[],Valor).
+%Siendo X la caja devuelta(que sera una lista vacia en este caso), Y la bolsa devuelta (que sera una lista vacia en este caso), Z las factorias rellenas, que en este caso siguen vacias y valor que sera 0
+%La bolsa, la caja, las factorias y el centro estan vacios, fin del juego.
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
+   isEmpty_ListaDeListas(FactoriasIn,_,_,ValorAux1),
+   ValorAux1 is 1,
+   estaVacia(BolsaIn),
+   BolsaIn = BolsaOut,
+   estaVacia(CentroIn),
+   estaVacia(CajaIn),
+   CajaIn = CajaOut,
+   FactoriasIn = FactoriasOut,
+   Valor is 0,!
+   .
+%Ejemplo para que se meta aqui:
+%comprobarRellenarFactorias([1],X,[],Y,[[],[],[],[],[],[]],Z,[],Valor).
+%Siendo X la caja devuelta que estara vacia, Y que seguira vacia, Z que se habra rellenado con un 1 en la primera casilla y valor que sera 1
+%caso en el que la bolsa y las factorias estan vacias, en este caso el centro no importa y se rellena con la caja
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
+    isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
+    ValorAux1 is 1,
+    estaVacia(BolsaIn),
+    BolsaIn = BolsaOut,
+    isEmpty(CajaIn,_,_,ValorAux6),
+    ValorAux6 is 0,
+    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,CajaIn,CajaOut),
+    Valor is 1,!
+    .
+%Ejemplo para que se meta aqui:
+%comprobarRellenarFactorias([],X,[1],Y,[[],[],[],[],[],[]],Z,[],Valor).
+%Siendo X la caja devuelta que seguira estando vacia, Y que sera la bolsa devuelta que se vaciara, Z que se habra rellenado con un 1 en la primera casilla y valor que sera 2
+%caso en el que la caja y las factorias estan vacias, en este caso el centro no importa. La bolsa tiene alguna ficha por lo que se rellena con la bolsa
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
+    isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
+    ValorAux1 is 1,
+    estaVacia(CajaIn),
+    CajaIn = CajaOut,
+    isEmpty(BolsaIn,_,_,ValorAux2),
+    ValorAux2 is 0,
+    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaIn,BolsaOut),
+    Valor is 2,!
+    .
+%Ejemplo para que se meta aqui:
+%comprobarRellenarFactorias([1],X,[2],Y,[[],[],[],[],[],[]],Z,[],Valor).
+%Siendo X la caja devuelta que tendra un 1, Y que sera la bolsa devuelta que estara vacia,Z que tendra un 2 en la primera casilla y valor que sera 3.
+%Si la caja y la bolsa tienen algo, se rellena con la bolsa
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,_,Valor):-
+   isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
+   ValorAux1 is 1,
+   isEmpty(BolsaIn,_,_,ValorAux2),
+   ValorAux2 is 0,
+   isEmpty(CajaIn,_,_,ValorAux4),
+   ValorAux4 is 0,
+   CajaIn = CajaOut,
+   rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaIn,BolsaOut),
+   Valor is 3,!
+   .
+%Ejemplo para que se meta aqui:
+%comprobarRellenarFactorias([],X,[],Y,[[],[],[],[],[],[]],Z,[1],Valor).
+%Siendo X la caja devuelta que estara vacia, Y que sera la bolsa devuelta que tambien estara vacia,Z las factorias devueltas que tambien estaran vacias y Valor que sera 4.
+%si la bolsa y la caja esta vacias y el centro tiene fichas no se hace nada
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
+   isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
+   ValorAux1 is 1,
+   estaVacia(BolsaIn),
+   BolsaIn = BolsaOut,
+   isEmpty(CentroIn,_,_,ValorAux3),
+   ValorAux3 is 0,
+   estaVacia(CajaIn),
+   CajaIn = CajaOut,
+   FactoriasIn = FactoriasOut,
+   Valor is 4,!
+   .
