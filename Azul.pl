@@ -501,7 +501,7 @@ get_azulejo(NumFactoria, MaxNumFactoria, Lista_factorias, Lista_factoriasOut, Li
 
 get_azulejo(_,_,Lista_factoriasOut,Lista_factoriasOut, ListaFichasOut, ListaFichasOut, Color, Color).
 
-main():-
+jugar():-
    pedir_numero_jugadores(NumJugadores),
    generar_supermatriz(NumJugadores, [], Supermatriz),
    writeln('Situacion inicial'),
@@ -519,94 +519,125 @@ show_ganador(Ganador):- %Situación en la que hay un ganador.
 show_ganador(Ganador):- %Situación en la que no hay ganador.
    Ganador = -1,
    writeln('Empate.').
+
+is_space_available(Color,ListaLineaPatrones, Valor):-
+   is_espacio_disponible(Color, 1, ListaLineaPatrones, 2, _, ValorAux),
+   Valor = ValorAux.
+   %writeln('PRUEBA'),
+   %writeln(Valor),
+   %writeln(ValorAux).
    
 %Comprobar si existe espacio para introducir un azulejo en las líneas de patrón de un jugador
 is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea no está completa y es del mismo color que el color pasado por parámetro
-   ValorAux = 1,
-   writeln('MIAU'),
-   writeln(NumFila),
-   writeln(ListaLineaPatrones),
+   %writeln('ValorAux1:'),
+   %writeln(ValorAux),
+   ValorAux = 2,
+   %writeln('MIAU'),
+   %writeln(NumFila),
+   %writeln(ListaLineaPatrones),
    length(ListaLineaPatrones, NumLineasRestantes),
    NumLineasRestantes \= 0,
-   writeln('MIAU'),
+   %writeln('MIAU'),
    nth1(1,ListaLineaPatrones,Primero),
    length(Primero, NumFichasEnFila),
    NumFichasEnFila < NumFila,
-   writeln('MIAU'),
+   %writeln('MIAU'),
    NumFichasEnFila \= 0,
-   writeln('MIAU'),
+   %writeln('MIAU'),
    member(Color, Primero),
-   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, 0, 1, Valor),!.
+   ValorAuxiliar = 1,
+   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAuxiliar, 1, Valor),!.
    %Valor = 1,!.
 
 is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea no está completa y no es del mismo color que el color pasado por parámetro
-   ValorAux = 1,
-   writeln('MIAU2'),
-   writeln(NumFila),
-   writeln(ListaLineaPatrones),
+   %writeln('ValorAux2:'),
+   %writeln(ValorAux),
+   ValorAux = 2,
+   %writeln('MIAU2'),
+   %writeln(NumFila),
+   %writeln(ListaLineaPatrones),
    length(ListaLineaPatrones, NumLineasRestantes),
    NumLineasRestantes \= 0,
-   writeln('MIAU2'),
+   %writeln('MIAU2'),
    ListaLineaPatrones = [Primero|Resto],
    length(Primero, NumFichasEnFila),
    NumFichasEnFila < NumFila,
-   writeln('MIAU2'),
+   %writeln('MIAU2'),
    NumFichasEnFila \= 0,
-   writeln('MIAU2'),
+   %writeln('MIAU2'),
    not(member(Color, Primero)),
-   writeln('MIAU2'),
+   %writeln('MIAU2'),
    SiguienteFila is NumFila+1,
-   is_espacio_disponible(Color, SiguienteFila, Resto, ValorAux, _, Valor),!.
-   
+   ValorAuxiliar = ValorAux,
+   is_espacio_disponible(Color, SiguienteFila, Resto, ValorAuxiliar, _, Valor),!.
+
 is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea está vacía
-   ValorAux = 1,
-   writeln('MIAU3'),
-   writeln(NumFila),
-   writeln(ListaLineaPatrones),
+   %writeln('ValorAux3:'),
+   %writeln(ValorAux),
+   ValorAux = 2,
+   %writeln('MIAU3'),
+   %writeln(NumFila),
+   %writeln(ListaLineaPatrones),
    length(ListaLineaPatrones, NumLineasRestantes),
    NumLineasRestantes \= 0,
-   writeln('MIAU3'),
+   %writeln('MIAU3'),
    nth1(1,ListaLineaPatrones,Primero),
    length(Primero, NumFichasEnFila),
    NumFichasEnFila < NumFila,
    NumFichasEnFila = 0,
-   writeln('MIAU3'),
-   writeln('MOCO'),
-   writeln(Color),
-   writeln(NumFila),
-   writeln(ListaLineaPatrones),
-   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, 0, 1, Valor),!.
+   %writeln('MIAU3'),
+   %writeln('MOCO'),
+   %writeln(Color),
+   %writeln(NumFila),
+   %writeln(ListaLineaPatrones),
+   ValorAuxiliar = 1,
+   %writeln('MOCO'),
+   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAuxiliar, 1, Valor),!.
+   %writeln('CACA'),
+   %writeln(Valor),!.
    %Valor = 1,!.
 
 is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea se encuentra completa y no es la última
-   ValorAux = 1,
-   writeln('MIAU4'),
-   writeln(NumFila),
-   writeln(ListaLineaPatrones),
+   %writeln('ValorAux4:'),
+   %writeln(ValorAux),
+   ValorAux = 2,
+   %writeln('MIAU4'),
+   %writeln(NumFila),
+   %writeln(ListaLineaPatrones),
    length(ListaLineaPatrones, NumLineasRestantes),
    NumLineasRestantes \= 0,
-   writeln('MIAU4'),
+   %writeln('MIAU4'),
    ListaLineaPatrones = [Primero|Resto],
    length(Primero, NumFichasEnFila),
    NumFichasEnFila >= NumFila,
-   writeln('MIAU4'),
+   %writeln('MIAU4'),
    %NumFichasEnFila = NumFila,
-   writeln('MIAU4'),
+   %writeln('MIAU4'),
    SiguienteFila is NumFila+1,
-   is_espacio_disponible(Color, SiguienteFila, Resto, ValorAux, _, Valor),!.
+   ValorAuxiliar = ValorAux,
+   is_espacio_disponible(Color, SiguienteFila, Resto, ValorAuxiliar, _, Valor),!.
 
 is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la no quedan más líneas
-   ValorAux = 1,
-   writeln('MIAU5'),
-   writeln(NumFila),
-   writeln(ListaLineaPatrones),
+   %writeln('ValorAux5:'),
+   %writeln(ValorAux),
+   ValorAux = 2,
+   %writeln('MIAU5'),
+   %writeln(NumFila),
+   %writeln(ListaLineaPatrones),
    length(ListaLineaPatrones, NumLineasRestantes),
    NumLineasRestantes = 0,
-   writeln('MIAU5'),
-   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, 0, 0, Valor),!.
+   %writeln('MIAU5'),
+   ValorAuxiliar = 0,
+   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAuxiliar, 0, Valor),!.
    %Valor = 0,!.
 
-is_espacio_disponible(_,_,_,_, Valor,Valor).
+is_espacio_disponible(_,_,_,_,Valor,Valor).
+   %writeln('VALOR'),
+   %writeln(ValorAux),
+   %Valor = ValorAux,!.
+   %writeln('MIAU6'),
+   %ValorAux \= 1,
+   %Valor = ValorEspecial,!.
 %   Valor is 0.
 
 juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Situación en la que la factoria usada no es el centro de la mesa y el número de jugadores no se ha superado por el número de jugador
@@ -629,14 +660,15 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Sit
    get_azulejo(NumFactoria, LongitudListaFactorias, Lista_factorias, Lista_factoriasOut, [], ListaFichas,_, ColorSeleccionado),
    writeln(''),
    writeln(Lista_factoriasOut),
-   writeln(ColorSeleccionado),
-   writeln('LINES'),
-   writeln(Lineas_patron),
-   is_espacio_disponible(ColorSeleccionado, 1, Lineas_patron, 1, _, Valor),
-   writeln('CLICK'),
-   writeln(Valor),
+   %writeln(ColorSeleccionado),
+   %writeln('LINES'),
+   %writeln(Lineas_patron),
+   is_space_available(ColorSeleccionado,Lineas_patron, Valor2),
+   %is_espacio_disponible(ColorSeleccionado, 1, Lineas_patron, 2, _, Valor2),!,
+   %writeln('CLICK'),
+   %writeln(Valor2),
    %Valor = 1,
-   colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, Lineas_patron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
+   colocarAzulejos(ColorSeleccionado, ListaFichas, Valor2, Lineas_patron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
    %pedir_linea_patron(Lineas_patron, ColorSeleccionado, FilaLineaPatron),
    %length(ListaFichas, NumFichas),
    nth1(FilaLineaPatron, Lineas_patron, _, OtrasLineasPatron), %Se separa la línea de patrón a modificar de las demás
@@ -669,8 +701,8 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
    GanadorAux = -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    comprobarRellenarFactorias(Caja,Bolsa,ValorAux),
-   writeln('QUACK2'),
-   writeln(ValorAux),
+   %writeln('QUACK2'),
+   %writeln(ValorAux),
    ValorAux \= 0, %Situaciones en las que aún quedan azulejos
    %rellenar_factorias_generadas(Lista_factorias_sin_centro, [], ListaFactoriasOut, Bolsa, BolsaOut),
    rellenadoFactorias(Caja,CajaOut,Bolsa,BolsaOut,Lista_factorias_sin_centro,ListaFactoriasOut,ValorAux),
@@ -692,7 +724,7 @@ juego(NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
    nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
    nth0(0,Datos_generalesAux,Bolsa), %Cogemos la bolsa
    nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
-   writeln('QUACK'),
+   %writeln('QUACK'),
    %length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
    %nth1(LongitudListaFactorias, Lista_factoriasAux, _, Lista_factorias_sin_centro), %Separación centro del resto de factorias
    search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
@@ -717,7 +749,7 @@ juego(NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
    nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
    %nth0(0,Datos_generalesAux,Bolsa), %Cogemos la bolsa
    %nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
-   writeln('QUACK3'),
+   %writeln('QUACK3'),
    %length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
    %nth1(LongitudListaFactorias, Lista_factoriasAux, _, Lista_factorias_sin_centro), %Separación centro del resto de factorias
    search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
@@ -887,12 +919,12 @@ realizar_llenado_paredes_jugadores(_,_,_,_, SupermatrizOut, SupermatrizOut).
 %Comprobar que la longitud de una línea de la pared tiene 5 azulejos
 comprobarLongLista(LineaPared, Valor):- %Situación en la que tiene 5 azulejos
    length(LineaPared, LongitudLista),
-   LongitudLista = 1,
+   LongitudLista = 5,
    Valor is 1, !. %La lista tiene 5 elementos
     
 comprobarLongLista(LineaPared, Valor):- %Situación en la que no tiene 5 azulejos
    length(LineaPared, LongitudLista),
-   LongitudLista \= 1,
+   LongitudLista \= 5,
    Valor is 0, !. %La lista no tiene 5 elementos
 
 %Comprueba la finalización o no de una partida
