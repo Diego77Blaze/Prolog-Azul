@@ -199,7 +199,6 @@ coger_Color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMe
 
 coger_Color(_, _, ListaColorOut, ListaColorOut, CentroMesaOut, CentroMesaOut).
 
-
 %Generar lista de colores a partir de las fichas de una factoria
 get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
     Factoria = [Primero|Resto],
@@ -228,26 +227,17 @@ estaVacia(Lista):-
     length(Lista, LongitudLista),
     LongitudLista = 0.
 
-%Comprueba que una lista está vacía
-isEmpty(Lista, ValorAux, _, Valor):-
+isEmpty(Lista, Valor):-
 %ValorAux se utiliza como valor de parada de las llamadas recursivas con un valor distinto de 0 (lista no vacía) y 1 (lista vacía)
     length(Lista, LongitudLista),
     LongitudLista = 0,
-    ValorAux \= 1,
-    ValorAux \= 0,
-    ValorAux2 is 1, %Lista está vacía
-    isEmpty(Lista, ValorAux2, ValorAux2, Valor),!.
+    Valor is 1,!. %Lista está vacía
 
-isEmpty(Lista, ValorAux, _, Valor):-
+isEmpty(Lista, Valor):-
 %ValorAux se utiliza como valor de parada de las llamadas recursivas con un valor distinto de 0 (lista no vacía) y 1 (lista vacía)
     length(Lista, LongitudLista),
     LongitudLista \= 0,
-    ValorAux \= 1,
-    ValorAux \= 0,
-    ValorAux2 is 0,  %Lista no está vacía
-    isEmpty(Lista, ValorAux2, ValorAux2, Valor),!.
-
-isEmpty(_, _, Valor, Valor).
+    Valor is 0,!. %Lista tiene azulejos
 
 %Verifica si todas las listas de una lista están vacías
 isEmpty_ListaDeListas(ListaDeListas, ValorAux, _, Valor):- %Situación en la que todas las listas están vacías
@@ -263,7 +253,7 @@ isEmpty_ListaDeListas(ListaDeListas, ValorAux, _, Valor):- %Situación en la que
     length(ListaDeListas, LongitudListaDeListas),
     LongitudListaDeListas \= 0, %Quedan elementos
     ListaDeListas = [Primera|Resto],
-    isEmpty(Primera, 2, _, ValorAux2),
+    isEmpty(Primera, ValorAux2),
     ValorAux2 = 1, %La lista está vacía
     isEmpty_ListaDeListas(Resto, ValorAux2,_, Valor),!.
 
@@ -272,7 +262,7 @@ isEmpty_ListaDeListas(ListaDeListas, ValorAux, _, Valor):- %Situación en la que
     length(ListaDeListas, LongitudListaDeListas),
     LongitudListaDeListas \= 0, %Quedan elementos
     ListaDeListas = [Primera|Resto],
-    isEmpty(Primera, 2, _, ValorAux2),
+    isEmpty(Primera, ValorAux2),
     ValorAux2 = 0, %La lista no está vacía
     isEmpty_ListaDeListas(Resto, ValorAux2,ValorAux2, Valor),!.
 
@@ -408,7 +398,7 @@ get_azulejo_centro(_,_, ListaFichas, ListaFichas, CentroActualizado, CentroActua
 
 rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
     Lineas_patron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
-    isEmpty(Primero, 2, _, Valor),
+    isEmpty(Primero, Valor),
     Valor = 1, %Lista está vacía
     Pared = [PrimeraFila|RestoFilas],%Separación de la cabeza de las filas de la pared de la cola de la misma
     append(ParedAux, [PrimeraFila], ParedAux2), %Se va reconstruyendo la pared con lo que había de líneas anteriores de la pared con la que se acaba de estudiar
@@ -418,7 +408,7 @@ rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, P
 
 rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
     Lineas_patron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
-    isEmpty(Primero, 2, _, Valor),
+    isEmpty(Primero, Valor),
     Valor \= 1, %Lista no está vacía
     %not(estaVacia(Primero)), !, %Verificar que la lista no está vacía
     length(Primero, NumFichasColocadas), %Se obtiene el número de azulejos colocados en una línea de patrón
@@ -436,7 +426,7 @@ rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, P
 
 rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
     Lineas_patron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
-    isEmpty(Primero, 2, _, Valor),
+    isEmpty(Primero, Valor),
     Valor \= 1, %Lista no está vacía
     %not(estaVacia(Primero)), !, %Verificar que la lista no está vacía
     length(Primero, NumFichasColocadas), %Se obtiene el número de azulejos colocados en una línea de patrón
@@ -449,7 +439,7 @@ rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, P
 
 rellenar_pared(Fila_actual, Lineas_patron, Lineas_patronAux, Lineas_PatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
     Lineas_patron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
-    isEmpty(Primero, 2, _, Valor),
+    isEmpty(Primero, Valor),
     Valor \= 1, %Lista no está vacía
     %not(estaVacia(Primero)), !, %Verificar que la lista no está vacía
     length(Primero, NumFichasColocadas), %Se obtiene el número de azulejos colocados en una línea de patrón
@@ -656,23 +646,15 @@ realizar_llenado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, Num
 realizar_llenado_paredes_jugadores(_,_,_,_, SupermatrizOut, SupermatrizOut).
 
 %Comprobar que la longitud de una línea de la pared tiene 5 azulejos
-comprobarLongLista(LineaPared, ValorAux, _, Valor):- %Situación en la que tiene 5 azulejos
+comprobarLongLista(LineaPared, Valor):- %Situación en la que tiene 5 azulejos
     length(LineaPared, LongitudLista),
     LongitudLista = 5,
-    ValorAux \= 0,
-    ValorAux \= 1,
-    ValorAux2 is 1, %La lista tiene 5 elementos
-    comprobarLongLista(LineaPared, ValorAux2, ValorAux2, Valor),!.
-
-comprobarLongLista(LineaPared, ValorAux, _, Valor):- %Situación en la que no tiene 5 azulejos
+    Valor is 1, !. %La lista tiene 5 elementos
+    
+comprobarLongLista(LineaPared, Valor):- %Situación en la que no tiene 5 azulejos
     length(LineaPared, LongitudLista),
     LongitudLista \= 5,
-    ValorAux \= 0,
-    ValorAux \= 1,
-    ValorAux2 is 0, %La lista no tiene 5 elementos
-    comprobarLongLista(LineaPared, ValorAux2, ValorAux2, Valor),!.
-
-comprobarLongLista(_,_,Valor,Valor).
+    Valor is 0, !. %La lista no tiene 5 elementos
 
 %Comprueba la finalización o no de una partida
 comprobarFinDeJuego(Pared, ValorAux, _, Valor):-%Situación en la que una de las filas tiene 5 azulejos
@@ -680,7 +662,7 @@ comprobarFinDeJuego(Pared, ValorAux, _, Valor):-%Situación en la que una de las
     length(Pared, LongitudPared),
     LongitudPared \=0, %Quedan aún más filas
     Pared = [PrimeraLinea|RestoLineas],
-    comprobarLongLista(PrimeraLinea, 2, _, ValorAux2),
+    comprobarLongLista(PrimeraLinea, ValorAux2),
     ValorAux2 = 1, %La fila se encuentra completa
     comprobarFinDeJuego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
 
@@ -697,95 +679,33 @@ comprobarFinDeJuego(Pared, ValorAux, _, Valor):- %Situación en la que la fila e
     length(Pared, LongitudPared),
     LongitudPared \=0,%Quedan aún más filas
     Pared = [PrimeraLinea|RestoLineas],
-    comprobarLongLista(PrimeraLinea, 2, _, ValorAux2),
+    comprobarLongLista(PrimeraLinea, ValorAux2),
     ValorAux2 = 0,
     comprobarFinDeJuego(RestoLineas, ValorAux2, _, Valor),!.
 
 comprobarFinDeJuego(_,_,Valor,Valor).
 
-%Esta funcion comprueba si la caja, la bolsa, el centro y las factorias estan vacias y actua segun sea conveniente.
-%Siendo CajaIn la caja actual y CajaOut la caja actualizada al meter fichas a las factorias si es que lo hace
-%Siendo BolsaIn la bolsa actual  y BolsaOut la bolsa actualizada al haber metido las fichas a las factorias
-%FactoriasIn sera una lista de listas vacia en la que meteremos las fichas de la bolsa o la caja en FactoriasOut, que sera las factorias actualizadas
-%CentroIn es la lista de las fichas del centro
-%Valor es el valor que dictara en que situacion nos encontramos
-%Si valor==0 --> La bolsa, la caja y el centro estan vacios. No se puede continuar,se acaba el juego.
-%Si valor==1 --> la caja tiene fichas y la bolsa esta vacia, el centro nos da igual en este caso. Se rellena con la caja directamente.
-%Si valor==2 --> La bolsa tiene fichas y la caja no, el centro tambien da igual. Se rellena con la bolsa.
-%Si valor==3 --> La bolsa y la caja tienen fichas, el centro da igual. Se rellena con la bolsa.
-%Si valor==4 --> La bolsa y la caja estan vacias pero el centro tiene fichas. No hace falta hacer nada.
+%Comprueba si la caja, la bolsa, el centro y las factorias estan vacias y actúa según sea conveniente.
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que la bolsa, la caja, las factorias y el centro están vacías
+   estaVacia(BolsaIn),
+   BolsaOut = BolsaIn,
+   estaVacia(CajaIn),
+   CajaOut = CajaIn,
+   FactoriasOut = FactoriasIn,
+   Valor is 0,!.
 
-%Ejemplo para que se meta aqui:
-%comprobarRellenarFactorias([],X,[],Y,[[],[],[],[],[],[]],Z,[],Valor).
-%Siendo X la caja devuelta(que sera una lista vacia en este caso), Y la bolsa devuelta (que sera una lista vacia en este caso), Z las factorias rellenas, que en este caso siguen vacias y valor que sera 0
-%La bolsa, la caja, las factorias y el centro estan vacios, fin del juego.
-comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
-   isEmpty_ListaDeListas(FactoriasIn,_,_,ValorAux1),
-   ValorAux1 is 1,
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que la bolsa, las factorias y el centro están vacías, pero la caja no
    estaVacia(BolsaIn),
-   BolsaIn = BolsaOut,
-   estaVacia(CentroIn),
-   estaVacia(CajaIn),
-   CajaIn = CajaOut,
-   FactoriasIn = FactoriasOut,
-   Valor is 0,!
-   .
-%Ejemplo para que se meta aqui:
-%comprobarRellenarFactorias([1],X,[],Y,[[],[],[],[],[],[]],Z,[],Valor).
-%Siendo X la caja devuelta que estara vacia, Y que seguira vacia, Z que se habra rellenado con un 1 en la primera casilla y valor que sera 1
-%caso en el que la bolsa y las factorias estan vacias, en este caso el centro no importa y se rellena con la caja
-comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
-    isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
-    ValorAux1 is 1,
-    estaVacia(BolsaIn),
-    BolsaIn = BolsaOut,
-    isEmpty(CajaIn,_,_,ValorAux6),
-    ValorAux6 is 0,
-    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,CajaIn,CajaOut),
-    Valor is 1,!
-    .
-%Ejemplo para que se meta aqui:
-%comprobarRellenarFactorias([],X,[1],Y,[[],[],[],[],[],[]],Z,[],Valor).
-%Siendo X la caja devuelta que seguira estando vacia, Y que sera la bolsa devuelta que se vaciara, Z que se habra rellenado con un 1 en la primera casilla y valor que sera 2
-%caso en el que la caja y las factorias estan vacias, en este caso el centro no importa. La bolsa tiene alguna ficha por lo que se rellena con la bolsa
-comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
-    isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
-    ValorAux1 is 1,
-    estaVacia(CajaIn),
-    CajaIn = CajaOut,
-    isEmpty(BolsaIn,_,_,ValorAux2),
-    ValorAux2 is 0,
-    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaIn,BolsaOut),
-    Valor is 2,!
-    .
-%Ejemplo para que se meta aqui:
-%comprobarRellenarFactorias([1],X,[2],Y,[[],[],[],[],[],[]],Z,[],Valor).
-%Siendo X la caja devuelta que tendra un 1, Y que sera la bolsa devuelta que estara vacia,Z que tendra un 2 en la primera casilla y valor que sera 3.
-%Si la caja y la bolsa tienen algo, se rellena con la bolsa
-comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,_,Valor):-
-   isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
-   ValorAux1 is 1,
-   isEmpty(BolsaIn,_,_,ValorAux2),
-   ValorAux2 is 0,
-   isEmpty(CajaIn,_,_,ValorAux4),
-   ValorAux4 is 0,
-   CajaIn = CajaOut,
+   isEmpty(CajaIn, ValorAux),
+   ValorAux is 0, %Caja no vacía
+   BolsaAux = CajaIn, %Se rellena la bosa con respecto a lo de la caja
+   CajaOut = [],
+   rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaAux,BolsaOut),
+   Valor is 1,!.
+
+comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que las factorias y el centro están vacías, pero la bolsa no y el estado de la caja da igual
+   isEmpty(BolsaIn, ValorAux),
+   ValorAux is 0, %Caja no vacía
    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaIn,BolsaOut),
-   Valor is 3,!
-   .
-%Ejemplo para que se meta aqui:
-%comprobarRellenarFactorias([],X,[],Y,[[],[],[],[],[],[]],Z,[1],Valor).
-%Siendo X la caja devuelta que estara vacia, Y que sera la bolsa devuelta que tambien estara vacia,Z las factorias devueltas que tambien estaran vacias y Valor que sera 4.
-%si la bolsa y la caja esta vacias y el centro tiene fichas no se hace nada
-comprobarRellenarFactorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,CentroIn,Valor):-
-   isEmpty_ListaDeListas(FabricasIn,_,_,ValorAux1),
-   ValorAux1 is 1,
-   estaVacia(BolsaIn),
-   BolsaIn = BolsaOut,
-   isEmpty(CentroIn,_,_,ValorAux3),
-   ValorAux3 is 0,
-   estaVacia(CajaIn),
-   CajaIn = CajaOut,
-   FactoriasIn = FactoriasOut,
-   Valor is 4,!
-   .
+   CajaOut = CajaIn,
+   Valor is 2,!.
