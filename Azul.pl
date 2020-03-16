@@ -509,15 +509,105 @@ main():-
    juego(1, 1, NumJugadores, Supermatriz, Ganador),
    show_ganador(Ganador),!.
    
-show_ganador(Ganador):-
+%Mostrar el ganador de la partida
+show_ganador(Ganador):- %Situación en la que hay un ganador.
    Ganador \= -1,
    write('Ganador jugador '),
    write(Ganador),
    writeln('.').
    
-show_ganador(Ganador):-
+show_ganador(Ganador):- %Situación en la que no hay ganador.
    Ganador = -1,
    writeln('Empate.').
+   
+%Comprobar si existe espacio para introducir un azulejo en las líneas de patrón de un jugador
+is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea no está completa y es del mismo color que el color pasado por parámetro
+   ValorAux = 1,
+   writeln('MIAU'),
+   writeln(NumFila),
+   writeln(ListaLineaPatrones),
+   length(ListaLineaPatrones, NumLineasRestantes),
+   NumLineasRestantes \= 0,
+   writeln('MIAU'),
+   nth1(1,ListaLineaPatrones,Primero),
+   length(Primero, NumFichasEnFila),
+   NumFichasEnFila < NumFila,
+   writeln('MIAU'),
+   NumFichasEnFila \= 0,
+   writeln('MIAU'),
+   member(Color, Primero),
+   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, 0, 1, Valor),!.
+   %Valor = 1,!.
+
+is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea no está completa y no es del mismo color que el color pasado por parámetro
+   ValorAux = 1,
+   writeln('MIAU2'),
+   writeln(NumFila),
+   writeln(ListaLineaPatrones),
+   length(ListaLineaPatrones, NumLineasRestantes),
+   NumLineasRestantes \= 0,
+   writeln('MIAU2'),
+   ListaLineaPatrones = [Primero|Resto],
+   length(Primero, NumFichasEnFila),
+   NumFichasEnFila < NumFila,
+   writeln('MIAU2'),
+   NumFichasEnFila \= 0,
+   writeln('MIAU2'),
+   not(member(Color, Primero)),
+   writeln('MIAU2'),
+   SiguienteFila is NumFila+1,
+   is_espacio_disponible(Color, SiguienteFila, Resto, ValorAux, _, Valor),!.
+   
+is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea está vacía
+   ValorAux = 1,
+   writeln('MIAU3'),
+   writeln(NumFila),
+   writeln(ListaLineaPatrones),
+   length(ListaLineaPatrones, NumLineasRestantes),
+   NumLineasRestantes \= 0,
+   writeln('MIAU3'),
+   nth1(1,ListaLineaPatrones,Primero),
+   length(Primero, NumFichasEnFila),
+   NumFichasEnFila < NumFila,
+   NumFichasEnFila = 0,
+   writeln('MIAU3'),
+   writeln('MOCO'),
+   writeln(Color),
+   writeln(NumFila),
+   writeln(ListaLineaPatrones),
+   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, 0, 1, Valor),!.
+   %Valor = 1,!.
+
+is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la que una línea se encuentra completa y no es la última
+   ValorAux = 1,
+   writeln('MIAU4'),
+   writeln(NumFila),
+   writeln(ListaLineaPatrones),
+   length(ListaLineaPatrones, NumLineasRestantes),
+   NumLineasRestantes \= 0,
+   writeln('MIAU4'),
+   ListaLineaPatrones = [Primero|Resto],
+   length(Primero, NumFichasEnFila),
+   NumFichasEnFila >= NumFila,
+   writeln('MIAU4'),
+   %NumFichasEnFila = NumFila,
+   writeln('MIAU4'),
+   SiguienteFila is NumFila+1,
+   is_espacio_disponible(Color, SiguienteFila, Resto, ValorAux, _, Valor),!.
+
+is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- %Situación en la no quedan más líneas
+   ValorAux = 1,
+   writeln('MIAU5'),
+   writeln(NumFila),
+   writeln(ListaLineaPatrones),
+   length(ListaLineaPatrones, NumLineasRestantes),
+   NumLineasRestantes = 0,
+   writeln('MIAU5'),
+   is_espacio_disponible(Color, NumFila, ListaLineaPatrones, 0, 0, Valor),!.
+   %Valor = 0,!.
+
+is_espacio_disponible(_,_,_,_, Valor,Valor).
+%   Valor is 0.
 
 juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Situación en la que la factoria usada no es el centro de la mesa y el número de jugadores no se ha superado por el número de jugador
    nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
@@ -539,10 +629,18 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Sit
    get_azulejo(NumFactoria, LongitudListaFactorias, Lista_factorias, Lista_factoriasOut, [], ListaFichas,_, ColorSeleccionado),
    writeln(''),
    writeln(Lista_factoriasOut),
-   pedir_linea_patron(Lineas_patron, ColorSeleccionado, FilaLineaPatron),
-   length(ListaFichas, NumFichas),
-   nth1(FilaLineaPatron, Lineas_patron, Linea_patron, OtrasLineasPatron), %Se separa la línea de patrón a modificar de las demás
-   rellenarPatron(FilaLineaPatron,NumFichas,ColorSeleccionado,Linea_patron,PatronOut,Suelo,SueloOut,Caja,CajaOut),
+   writeln(ColorSeleccionado),
+   writeln('LINES'),
+   writeln(Lineas_patron),
+   is_espacio_disponible(ColorSeleccionado, 1, Lineas_patron, 1, _, Valor),
+   writeln('CLICK'),
+   writeln(Valor),
+   %Valor = 1,
+   colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, Lineas_patron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
+   %pedir_linea_patron(Lineas_patron, ColorSeleccionado, FilaLineaPatron),
+   %length(ListaFichas, NumFichas),
+   nth1(FilaLineaPatron, Lineas_patron, _, OtrasLineasPatron), %Se separa la línea de patrón a modificar de las demás
+   %rellenarPatron(FilaLineaPatron,NumFichas,ColorSeleccionado,Linea_patron,PatronOut,Suelo,SueloOut,Caja,CajaOut),
 
    %NumSiguienteJugador is NumJugador+1,
    nth1(FilaLineaPatron, Lineas_patronAux, PatronOut, OtrasLineasPatron), %Se une la línea de patrón modificada con las demás
@@ -553,7 +651,6 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Sit
    writeln(Supermatriz_actualizada),
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
    juego(NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada, Ganador),!.
-
 
 juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
@@ -569,7 +666,7 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
    length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
    nth1(LongitudListaFactorias, Lista_factoriasAux, Centro, Lista_factorias_sin_centro), %Separación centro del resto de factorias
-   search_ganador(1, NumJugadorInicial, NumJugador, NumJugadores, Datos_jugadores, GanadorAux),
+   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
    GanadorAux = -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    comprobarRellenarFactorias(Caja,Bolsa,ValorAux),
    writeln('QUACK2'),
@@ -583,7 +680,7 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    writeln(Supermatriz_actualizada2),
    juego(NumJugador, NumJugador, NumJugadores, Supermatriz_actualizada2, Ganador),!.
 
-juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
+juego(NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
    nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
    nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
    isEmpty_ListaDeListas(Lista_factorias, 1, _, Valor),
@@ -598,7 +695,7 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    writeln('QUACK'),
    %length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
    %nth1(LongitudListaFactorias, Lista_factoriasAux, _, Lista_factorias_sin_centro), %Separación centro del resto de factorias
-   search_ganador(1, NumJugadorInicial, NumJugador, NumJugadores, Datos_jugadores, GanadorAux),
+   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
    GanadorAux = -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    comprobarRellenarFactorias(Caja,Bolsa,ValorAux),
    ValorAux = 0, %Situaciones en las que el juego ha llegado a su fin
@@ -608,7 +705,7 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    %search_ganador(1, NumJugadorInicial, NumJugador, NumJugadores, Datos_jugadores, GanadorAux),
    Ganador = GanadorAux,!.
 
-juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
+juego(NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
    nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
    nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
    isEmpty_ListaDeListas(Lista_factorias, 1, _, Valor),
@@ -620,10 +717,10 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
    %nth0(0,Datos_generalesAux,Bolsa), %Cogemos la bolsa
    %nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
-   writeln('QUACK'),
+   writeln('QUACK3'),
    %length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
    %nth1(LongitudListaFactorias, Lista_factoriasAux, _, Lista_factorias_sin_centro), %Separación centro del resto de factorias
-   search_ganador(1, NumJugadorInicial, NumJugador, NumJugadores, Datos_jugadores, GanadorAux),
+   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
    GanadorAux \= -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    %comprobarRellenarFactorias(Caja,Bolsa,ValorAux),
    %ValorAux = 0, %Situaciones en las que el juego ha llegado a su fin
@@ -633,6 +730,38 @@ juego(NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
    %search_ganador(1, NumJugadorInicial, NumJugador, NumJugadores, Datos_jugadores, GanadorAux),
    Ganador = GanadorAux,!.
 
+colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, Lineas_patron, PatronOut, Suelo, SueloOut, Caja, CajaOut):-
+   Valor = 1,
+   pedir_linea_patron(Lineas_patron, ColorSeleccionado, FilaLineaPatron),
+   length(ListaFichas, NumFichas),
+   nth1(FilaLineaPatron, Lineas_patron, Linea_patron), %Se separa la línea de patrón a modificar de las demás
+   rellenarPatron(FilaLineaPatron,NumFichas,ColorSeleccionado,Linea_patron,PatronAux,Suelo,SueloAux,Caja,CajaAux),
+   %PatronOut = PatronAux,
+   %SueloOut = SueloAux,
+   %CajaOut = CajaAux,
+   colocarAzulejos(ColorSeleccionado, ListaFichas, -1, PatronAux, PatronOut, SueloAux, SueloOut, CajaAux, CajaOut),!.
+
+colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, Lineas_patron, PatronOut, Suelo, SueloOut, Caja, CajaOut):-
+   Valor = 0,
+   length(Suelo, NumFichasSuelo),
+   NumFichasSuelo = 7,
+   %writeln('No se puede colocar en ninguna línea de patrón y dado a que el suelo está lleno se va a colocar los azulejos escogidos a la caja.'),
+   writeln('Dado que no entrar los azulejos escogidos en ninguna línea de patrón, se van a distribuir entre el suelo, lugar prioritario, y en la caja, si no queda espacio en el suelo.'),
+   append(Caja, ListaFichas, CajaAux),
+   %SueloOut = Suelo,
+   %CajaOut = CajaAux,
+   %PatronOut = Lineas_patron
+   colocarAzulejos(ColorSeleccionado, ListaFichas, -1, Lineas_patron, PatronOut, Suelo, SueloOut, CajaAux, CajaOut),!.
+
+colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, Lineas_patron, PatronOut, Suelo, SueloOut, Caja, CajaOut):-
+   Valor = 0,
+   length(Suelo, NumFichasSuelo),
+   NumFichasSuelo \= 7,
+   ListaFichas = [Primero|Resto],
+   append(Suelo, [Primero], SueloAux),
+   colocarAzulejos(ColorSeleccionado, Resto, Valor, Lineas_patron, PatronOut, SueloAux, SueloOut, Caja, CajaOut).
+   
+colocarAzulejos(_,_,_, PatronOut, PatronOut, SueloOut, SueloOut, CajaOut, CajaOut).
 
 %Busca al ganador de la partida
 search_ganador(_, NumJugadorInicial, NumJugador, _, ListaDatosJugador, Ganador):- %Situación en la que un jugador, que no es el inicial, es el ganador
