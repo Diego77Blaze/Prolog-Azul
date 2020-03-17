@@ -240,25 +240,25 @@ generar_supermatriz(NumJugadores, Lista_aux, Supermatriz):-
     rellenar_factorias_generadas(ListaFactorias, [], ListaFactoriasAux, Bolsa, BolsaAux),
     append(ListaFactoriasAux, [], ListaFactoriasAux2), %Incluye el centro de la mesa
     Lista_datos_comunes = ([BolsaAux, ListaFactoriasAux2, []]), %Bolsa, Factorias, Centro y Caja
-    generar_lista_datos_jugador(NumJugadores, [], Lista_datos_jugador),
+    generar_lista_datos_jugador(NumJugadores, [], ListaDatosJugador),
     append(Lista_aux, [Lista_datos_comunes], Lista_aux2),
-    append(Lista_aux2, [Lista_datos_jugador], Lista_aux3),
+    append(Lista_aux2, [ListaDatosJugador], Lista_aux3),
     generar_supermatriz(NumJugadores, Lista_aux3, Supermatriz).
 
 generar_supermatriz(_, Supermatriz, Supermatriz).
 
 %genera la lista de los datos de cada jugador
-generar_lista_datos_jugador(NumJugadores, Lista_datos_jugadorAux, Lista_datos_jugador):-
+generar_lista_datos_jugador(NumJugadores, ListaDatosJugadorAux, ListaDatosJugador):-
     NumJugadores \= 0, !,
     linea_patrones(LineasPatrones),
     pared(Pared),
     suelo(Suelo),
-    ListaDatosJugador = ([LineasPatrones, Pared, Suelo]),
+    ListaDatosJugadorAux2 = ([LineasPatrones, Pared, Suelo]),
     NumJugadoresAux is (NumJugadores-1),
-    append(Lista_datos_jugadorAux, [ListaDatosJugador], Lista_datos_jugadorAux2),
-    generar_lista_datos_jugador(NumJugadoresAux, Lista_datos_jugadorAux2, Lista_datos_jugador).
+    append(ListaDatosJugadorAux, [ListaDatosJugadorAux2], ListaDatosJugadorAux3),
+    generar_lista_datos_jugador(NumJugadoresAux, ListaDatosJugadorAux3, ListaDatosJugador).
 
-generar_lista_datos_jugador(_, Lista_datos_jugador, Lista_datos_jugador).
+generar_lista_datos_jugador(_, ListaDatosJugador, ListaDatosJugador).
 
 %Rellena una línea de patrón mientras que tenga espacio
 rellenarPatron(Fila, Cantidad, Color, PatronIn, PatronOut, SueloIn, SueloOut, CajaIn, CajaOut):-
@@ -430,11 +430,11 @@ rellenar_caja(Cantidad, Color, CajaIn, CajaOut):-
 rellenar_caja(_,_,CajaOut,CajaOut).
 
 %Obtiene la lista de factorias y el centro en relación a la selección del jugador
-get_azulejo(NumFactoria, MaxNumFactoria, Lista_factorias, Lista_factoriasOut, ListaFichas, ListaFichasOut, _, Color):-
+get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, ListaFichas, ListaFichasOut, _, Color):-
    NumFactoria \= -1,
    NumFactoria \= MaxNumFactoria, %Separación de los casos en los que se trabaja con cualquier factoria y no al centro
-   nth1(MaxNumFactoria, Lista_factorias, Centro, Lista_factorias_sin_centro), %Separación centro del resto de factorias
-   coger_factoria(Lista_factorias,NumFactoria, Factoria),
+   nth1(MaxNumFactoria, ListaFactorias, Centro, ListaFactoriasSinCentro), %Separación centro del resto de factorias
+   coger_factoria(ListaFactorias,NumFactoria, Factoria),
    writeln('Fichas factoria escogida:'),
    imprimir_lista(Factoria),
    get_lista_colores(Factoria, [], ListaColores),
@@ -444,15 +444,15 @@ get_azulejo(NumFactoria, MaxNumFactoria, Lista_factorias, Lista_factoriasOut, Li
    pedir_color(Factoria, ColorSeleccionado),
    get_azulejo_factoria(Factoria, ColorSeleccionado, ListaFichas, ListaFichasAux, [], ListaCentro),
    append(Centro, ListaCentro, ListaCentroAux), %Se actualiza el centro
-   nth1(NumFactoria, Lista_factorias_sin_centro, _, Resto_Factorias), %Separa la factoria usada del resto.
-   nth1(NumFactoria, Lista_factoriasOutAux, [], Resto_Factorias),    %Coloca la factoria usada modificada al resto
-   nth1(MaxNumFactoria, Lista_factoriasOutAux2, ListaCentroAux, Lista_factoriasOutAux),    %Coloca el centro junto con las factorias
-   get_azulejo(-1, MaxNumFactoria, Lista_factoriasOutAux2, Lista_factoriasOut, ListaFichasAux, ListaFichasOut, ColorSeleccionado, Color).
+   nth1(NumFactoria, ListaFactoriasSinCentro, _, RestoFactorias), %Separa la factoria usada del resto.
+   nth1(NumFactoria, ListaFactoriasOutAux, [], RestoFactorias),    %Coloca la factoria usada modificada al resto
+   nth1(MaxNumFactoria, ListaFactoriasOutAux2, ListaCentroAux, ListaFactoriasOutAux),    %Coloca el centro junto con las factorias
+   get_azulejo(-1, MaxNumFactoria, ListaFactoriasOutAux2, ListaFactoriasOut, ListaFichasAux, ListaFichasOut, ColorSeleccionado, Color).
 
-get_azulejo(NumFactoria, MaxNumFactoria, Lista_factorias, Lista_factoriasOut, ListaFichas, ListaFichasOut, _, Color):-
+get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, ListaFichas, ListaFichasOut, _, Color):-
    NumFactoria \= -1,
    NumFactoria = MaxNumFactoria, %Separación de los casos en los que se trabaja con cualquier factoria y no al centro
-   nth1(MaxNumFactoria, Lista_factorias, Centro, Lista_factorias_sin_centro), %Separación centro del resto de factorias
+   nth1(MaxNumFactoria, ListaFactorias, Centro, ListaFactoriasSinCentro), %Separación centro del resto de factorias
    writeln('Fichas factoria escogida:'),
    imprimir_lista(Centro),
    get_lista_colores(Centro, [], ListaColores),
@@ -461,10 +461,10 @@ get_azulejo(NumFactoria, MaxNumFactoria, Lista_factorias, Lista_factoriasOut, Li
    imprimir_lista(ListaColores),
    pedir_color(Centro, ColorSeleccionado),
    get_azulejo_centro(Centro, ColorSeleccionado, ListaFichas, ListaFichasAux, [], ListaCentroAux),
-   nth1(MaxNumFactoria, Lista_factorias_con_centro, ListaCentroAux, Lista_factorias_sin_centro),    %Coloca el centro junto con las factorias
-   get_azulejo(-1, MaxNumFactoria, Lista_factorias_con_centro, Lista_factoriasOut, ListaFichasAux, ListaFichasOut, ColorSeleccionado, Color).
+   nth1(MaxNumFactoria, ListaFactorias_con_centro, ListaCentroAux, ListaFactoriasSinCentro),    %Coloca el centro junto con las factorias
+   get_azulejo(-1, MaxNumFactoria, ListaFactorias_con_centro, ListaFactoriasOut, ListaFichasAux, ListaFichasOut, ColorSeleccionado, Color).
 
-get_azulejo(_,_,Lista_factoriasOut,Lista_factoriasOut, ListaFichasOut, ListaFichasOut, Color, Color).
+get_azulejo(_,_,ListaFactoriasOut,ListaFactoriasOut, ListaFichasOut, ListaFichasOut, Color, Color).
 
 %Realiza la ejecución del juego
 jugar():-
@@ -472,95 +472,121 @@ jugar():-
    generar_supermatriz(NumJugadores, [], Supermatriz),
    writeln('Situacion inicial'),
    writeln(Supermatriz),
-   juego(1, 1, 1, 1, NumJugadores, Supermatriz, Ganador),
+   ejecucion_ronda(1, 1, 1, 1, NumJugadores, Supermatriz, Ganador),
    show_ganador(Ganador),!.
 
-%Realiza las operaciones del funcionamiento del juego   
-juego(Ronda, Turno, NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Situación en la que la factoria usada no es el centro de la mesa y el número de jugadores no se ha superado por el número de jugador
-   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
-   is_empty_lista_de_listas(Lista_factorias, 1, _, Valor),
+%Realiza las operaciones del funcionamiento del juego
+ejecucion_ronda(Ronda, Turno, NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-  %Situación en la que quedan azulejos en las factorias o en el centro de la mesa
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
+   is_empty_lista_de_listas(ListaFactorias, 1, _, Valor),
    Valor = 0, %Hay al menos un azulejo entre las distintas factorias y el centro de la mesa
-   %NumJugador =< NumJugadores, !,
    write('Ronda '),
    write(Ronda),
    write(', Turno '),
    writeln(Turno),
    write('Turno del jugador '),
    writeln(NumJugador),
-   nth0(1,Supermatriz,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
-   nth0(0,Datos_generales,Bolsa), %Cogemos la bolsa
-   nth0(2,Datos_generales,Caja), %Cogemos la caja
-   length(Lista_factorias,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
-   nth1(NumJugador,Datos_jugadores,Lista_datos_jugador, Lista_datos_otros_jugadores), %Separación datos jugador actual del resto
-   nth0(0, Lista_datos_jugador, LineasPatron),
-   nth0(1, Lista_datos_jugador, Pared),
-   nth0(2, Lista_datos_jugador, Suelo),
-   pedir_factoria(Lista_factorias, NumFactoria),
-   get_azulejo(NumFactoria, LongitudListaFactorias, Lista_factorias, Lista_factoriasOut, [], ListaFichas,_, ColorSeleccionado),
-   writeln(''),
-   writeln(Lista_factoriasOut),
-   is_space_available(ColorSeleccionado,LineasPatron, Valor2),
-   colocarAzulejos(ColorSeleccionado, ListaFichas, Valor2, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
-   Datos_jugador_actualizados = [PatronOut, Pared, SueloOut],
-   nth1(NumJugador,Datos_jugadores_actualizados,Datos_jugador_actualizados, Lista_datos_otros_jugadores), %Unión de los datos jugador actual con el resto
-   Datos_generales_actualizados = [Bolsa, Lista_factoriasOut, CajaOut],
-   Supermatriz_actualizada = [Datos_generales_actualizados, Datos_jugadores_actualizados],
-   writeln(Supermatriz_actualizada),
+   realizar_oferta_factorias(NumJugador, Supermatriz, Supermatriz_actualizada),
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
    SiguienteTurno is Turno+1,
-   juego(Ronda, SiguienteTurno, NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada, Ganador),!.
+   ejecucion_ronda(Ronda, SiguienteTurno, NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada, Ganador),!.
 
-juego(Ronda, _, NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):-
-   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
-   is_empty_lista_de_listas(Lista_factorias, 1, _, Valor),
+ejecucion_ronda(Ronda, _, NumJugadorInicial, NumJugador, NumJugadores, Supermatriz, Ganador):- %Situación en la que se rellenan las factorías y se pasa a la siguiente ronda del juego
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
+   is_empty_lista_de_listas(ListaFactorias, 1, _, Valor),
    Valor \= 0, %No hay ningún azulejo entre las distintas factorias y el centro de la mesa
    alicatado_paredes_jugadores(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Supermatriz, Supermatriz_actualizada),
-   nth0(0,Supermatriz_actualizada,Datos_generalesAux), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Datos_generalesAux,Lista_factoriasAux), %Cogemos la lista de factorias junto con el centro
-   nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
-   nth0(0,Datos_generalesAux,Bolsa), %Cogemos la bolsa
-   nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
-   length(Lista_factoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
-   nth1(LongitudListaFactorias, Lista_factoriasAux, Centro, Lista_factorias_sin_centro), %Separación centro del resto de factorias
-   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
+   nth0(0,Supermatriz_actualizada,DatosGeneralesAux), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,DatosGeneralesAux,ListaFactoriasAux), %Cogemos la lista de factorias junto con el centro
+   nth0(1,Supermatriz_actualizada,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   nth0(0,DatosGeneralesAux,Bolsa), %Cogemos la bolsa
+   nth0(2,DatosGeneralesAux,Caja), %Cogemos la caja
+   length(ListaFactoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
+   nth1(LongitudListaFactorias, ListaFactoriasAux, Centro, ListaFactoriasSinCentro), %Separación centro del resto de factorias
+   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, DatosJugadores, GanadorAux),
    GanadorAux = -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    check_rellenar_factorias(Caja,Bolsa,ValorAux),
    ValorAux \= 0, %Situaciones en las que aún quedan azulejos
-   realizar_rellenado_factorias(Caja,CajaOut,Bolsa,BolsaOut,Lista_factorias_sin_centro,ListaFactoriasOut,ValorAux),
-   nth1(LongitudListaFactorias, Lista_factorias_actualizada, Centro, ListaFactoriasOut), %Unión centro con el resto de factorias
-   Datos_generales_actualizados = [BolsaOut, Lista_factorias_actualizada, CajaOut],
-   Supermatriz_actualizada2 = [Datos_generales_actualizados, Datos_jugadores],
+   writeln('MIAU'),
+   writeln(ListaFactoriasSinCentro),
+   realizar_rellenado_factorias(Caja,CajaOut,Bolsa,BolsaOut,ListaFactoriasSinCentro,ListaFactoriasOut,ValorAux),
+   nth1(LongitudListaFactorias, ListaFactorias_actualizada, Centro, ListaFactoriasOut), %Unión centro con el resto de factorias
+   DatosGenerales_actualizados = [BolsaOut, ListaFactorias_actualizada, CajaOut],
+   Supermatriz_actualizada2 = [DatosGenerales_actualizados, DatosJugadores],
    writeln(Supermatriz_actualizada2),
    SiguienteRonda is Ronda+1,
-   juego(SiguienteRonda, 1, NumJugador, NumJugador, NumJugadores, Supermatriz_actualizada2, Ganador),!.
+   ejecucion_ronda(SiguienteRonda, 1, NumJugador, NumJugador, NumJugadores, Supermatriz_actualizada2, Ganador),!.
 
-juego(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
-   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
-   is_empty_lista_de_listas(Lista_factorias, 1, _, Valor),
+ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
+   is_empty_lista_de_listas(ListaFactorias, 1, _, Valor),
    Valor \= 0, %No hay ningún azulejo entre las distintas factorias y el centro de la mesa
    alicatado_paredes_jugadores(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Supermatriz, Supermatriz_actualizada),
-   nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
-   nth0(0,Datos_generalesAux,Bolsa), %Cogemos la bolsa
-   nth0(2,Datos_generalesAux,Caja), %Cogemos la caja
-   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
+   nth0(1,Supermatriz_actualizada,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   nth0(0,DatosGeneralesAux,Bolsa), %Cogemos la bolsa
+   nth0(2,DatosGeneralesAux,Caja), %Cogemos la caja
+   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, DatosJugadores, GanadorAux),
    GanadorAux = -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    check_rellenar_factorias(Caja,Bolsa,ValorAux),
    ValorAux = 0, %Situaciones en las que el juego ha llegado a su fin
    Ganador = GanadorAux,!.
 
-juego(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
-   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
-   is_empty_lista_de_listas(Lista_factorias, 1, _, Valor),
+ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
+   is_empty_lista_de_listas(ListaFactorias, 1, _, Valor),
    Valor \= 0, %No hay ningún azulejo entre las distintas factorias y el centro de la mesa
    alicatado_paredes_jugadores(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Supermatriz, Supermatriz_actualizada),
-   nth0(1,Supermatriz_actualizada,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
-   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, Datos_jugadores, GanadorAux),
+   nth0(1,Supermatriz_actualizada,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, DatosJugadores, GanadorAux),
    GanadorAux \= -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    Ganador = GanadorAux,!.
+
+%Se realiza la oferta de azulejos de las distintas factorias
+realizar_oferta_factorias(NumJugador, Supermatriz, SupermatrizActualizada):-
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
+   nth0(1,Supermatriz,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   nth0(0,DatosGenerales,Bolsa), %Cogemos la bolsa
+   nth0(2,DatosGenerales,Caja), %Cogemos la caja
+   length(ListaFactorias, LongitudListaFactorias),%Obtenemos la longitud de lista de factorias
+   nth1(LongitudListaFactorias, ListaFactorias, Centro, ListaFactoriasSinCentro), %Separación del centro del resto de factorías
+   nth1(NumJugador,DatosJugadores,ListaDatosJugador, ListaDatosOtrosJugadores), %Separación datos jugador actual del resto
+   nth0(0, ListaDatosJugador, LineasPatron),
+   nth0(1, ListaDatosJugador, Pared),
+   nth0(2, ListaDatosJugador, Suelo),
+   
+   writeln('Bolsa:'),
+   writeln(Bolsa),
+   
+   writeln('Línes de patrones'),
+   mostrar_pared(LineasPatron),
+   writeln('Su mosaico:'),
+   mostrar_pared(Pared),
+   write('Su suelo:'),
+   mostrar_suelo(Suelo),
+   
+   writeln('Contenido factorias:'),
+   mostrar_lista_factorias(1, ListaFactoriasSinCentro),
+   writeln('Contenido centro de la mesa:'),
+   mostrar_centro(Centro),
+   
+   %Oferta de factorías
+   pedir_factoria(ListaFactorias, NumFactoria),
+   get_azulejo(NumFactoria, LongitudListaFactorias, ListaFactorias, ListaFactoriasOut, [], ListaFichas,_, ColorSeleccionado),
+   writeln(''),
+   writeln(ListaFactoriasOut),
+   is_space_available(ColorSeleccionado,LineasPatron, Valor2),
+   colocarAzulejos(ColorSeleccionado, ListaFichas, Valor2, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
+   DatosJugadorActualizados = [PatronOut, Pared, SueloOut],
+   nth1(NumJugador,DatosJugadoresActualizados,DatosJugadorActualizados, ListaDatosOtrosJugadores), %Unión de los datos jugador actual con el resto
+   DatosGenerales_actualizados = [Bolsa, ListaFactoriasOut, CajaOut],
+   Supermatriz_actualizadaAux = [DatosGenerales_actualizados, DatosJugadoresActualizados],
+   writeln(Supermatriz_actualizadaAux),
+   SupermatrizActualizada = Supermatriz_actualizadaAux.
 
 %Mostrar el ganador de la partida
 show_ganador(Ganador):- %Situación en la que hay un ganador.
@@ -667,7 +693,7 @@ search_ganador(_, NumJugadorInicial, NumJugador, _, ListaDatosJugador, Ganador):
    NumJugador \= NumJugadorInicial, %No es el primer jugador al que se le rellena su pared
    nth1(NumJugador, ListaDatosJugador, DatosJugador),
    nth1(2, DatosJugador, Pared),
-   check_fin_juego(Pared, 0, _, Valor),
+   check_fin_ejecucion_ronda(Pared, 0, _, Valor),
    Valor = 1, %Ganador
    Ganador = NumJugador,!.
    
@@ -675,7 +701,7 @@ search_ganador(Situacion, NumJugadorInicial, NumJugador, NumJugadores, ListaDato
    NumJugador \= NumJugadorInicial, %No es el primer jugador al que se le rellena su pared
    nth1(NumJugador, ListaDatosJugador, DatosJugador),
    nth1(2, DatosJugador, Pared),
-   check_fin_juego(Pared, 0, _, Valor),
+   check_fin_ejecucion_ronda(Pared, 0, _, Valor),
    Valor \= 1, %No es el ganador
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
    search_ganador(Situacion, NumJugadorInicial, NumSiguienteJugador, NumJugadores, ListaDatosJugador, Ganador),!.
@@ -685,7 +711,7 @@ search_ganador(Situacion, NumJugadorInicial, NumJugador, NumJugadores, ListaDato
    Situacion \= 0, %Primera vez que se estudia
    nth1(NumJugador, ListaDatosJugador, DatosJugador),
    nth1(2, DatosJugador, Pared),
-   check_fin_juego(Pared, 0, _, Valor),
+   check_fin_ejecucion_ronda(Pared, 0, _, Valor),
    Valor \= 1, %No es el ganador
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
    search_ganador(0, NumJugadorInicial, NumSiguienteJugador, NumJugadores, ListaDatosJugador, Ganador),!.
@@ -695,7 +721,7 @@ search_ganador(Situacion, NumJugadorInicial, NumJugador, _, ListaDatosJugador, G
    Situacion \= 0, %Primera vez que se estudia
    nth1(NumJugador, ListaDatosJugador, DatosJugador),
    nth1(2, DatosJugador, Pared),
-   check_fin_juego(Pared, 0, _, Valor),
+   check_fin_ejecucion_ronda(Pared, 0, _, Valor),
    Valor = 1, %Es el ganador
    Ganador = NumJugador,!.
 
@@ -726,26 +752,26 @@ alicatado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, NumJugador
    writeln(NumJugador),
    %NumJugador =< NumJugadores, !,
    writeln(Supermatriz),
-   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Supermatriz,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
-   nth0(0,Datos_generales,Bolsa), %Cogemos la bolsa
-   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
-   nth0(2,Datos_generales,Caja), %Cogemos la caja
-   nth1(NumJugador,Datos_jugadores,Lista_datos_jugador, Lista_datos_otros_jugadores), %Separación datos jugador actual del resto
-   nth0(0, Lista_datos_jugador, LineasPatron),
-   nth0(1, Lista_datos_jugador, Pared),
-   nth0(2, Lista_datos_jugador, Suelo),
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
+   nth0(1,Supermatriz,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   nth0(0,DatosGenerales,Bolsa), %Cogemos la bolsa
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
+   nth0(2,DatosGenerales,Caja), %Cogemos la caja
+   nth1(NumJugador,DatosJugadores,ListaDatosJugador, ListaDatosOtrosJugadores), %Separación datos jugador actual del resto
+   nth0(0, ListaDatosJugador, LineasPatron),
+   nth0(1, ListaDatosJugador, Pared),
+   nth0(2, ListaDatosJugador, Suelo),
    alicatado_pared(1, LineasPatron, [], LineasPatronOut, Pared, [], ParedOut,Caja, CajaOut),
-   writeln('Lineas de patron:'),
-   writeln(LineasPatronOut),
-   writeln('Pared:'),
-   writeln(ParedOut),
-   writeln('Caja:'),
-   writeln(CajaOut),
-   Datos_jugador_actualizados = [LineasPatronOut, ParedOut, Suelo],
-   Datos_generales_actualizados = [Bolsa, Lista_factorias, CajaOut],
-   nth1(NumJugador,Datos_jugadores_actualizados,Datos_jugador_actualizados, Lista_datos_otros_jugadores), %Unión de los datos jugador actual con el resto
-   Supermatriz_actualizada = [Datos_generales_actualizados, Datos_jugadores_actualizados],
+   %writeln('Lineas de patron:'),
+   %writeln(LineasPatronOut),
+   %writeln('Pared:'),
+   %writeln(ParedOut),
+   %writeln('Caja:'),
+   %writeln(CajaOut),
+   DatosJugadorActualizados = [LineasPatronOut, ParedOut, Suelo],
+   DatosGenerales_actualizados = [Bolsa, ListaFactorias, CajaOut],
+   nth1(NumJugador,DatosJugadoresActualizados,DatosJugadorActualizados, ListaDatosOtrosJugadores), %Unión de los datos jugador actual con el resto
+   Supermatriz_actualizada = [DatosGenerales_actualizados, DatosJugadoresActualizados],
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
    alicatado_paredes_jugadores(Situacion, NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada, SupermatrizOut),!.
 
@@ -754,26 +780,26 @@ alicatado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, NumJugador
    Situacion = 1, %Se pasa por primera vez por el primer jugador
    writeln(NumJugador),
    writeln(Supermatriz),
-   nth0(0,Supermatriz,Datos_generales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
-   nth0(1,Supermatriz,Datos_jugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
-   nth0(0,Datos_generales,Bolsa), %Cogemos la bolsa
-   nth0(1,Datos_generales,Lista_factorias), %Cogemos la lista de factorias junto con el centro
-   nth0(2,Datos_generales,Caja), %Cogemos la caja
-   nth1(NumJugador,Datos_jugadores,Lista_datos_jugador, Lista_datos_otros_jugadores), %Separación datos jugador actual del resto
-   nth0(0, Lista_datos_jugador, LineasPatron),
-   nth0(1, Lista_datos_jugador, Pared),
-   nth0(2, Lista_datos_jugador, Suelo),
+   nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorías, el centro y la caja
+   nth0(1,Supermatriz,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
+   nth0(0,DatosGenerales,Bolsa), %Cogemos la bolsa
+   nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorías junto con el centro
+   nth0(2,DatosGenerales,Caja), %Cogemos la caja
+   nth1(NumJugador,DatosJugadores,ListaDatosJugador, ListaDatosOtrosJugadores), %Separación datos jugador actual del resto
+   nth0(0, ListaDatosJugador, LineasPatron),
+   nth0(1, ListaDatosJugador, Pared),
+   nth0(2, ListaDatosJugador, Suelo),
    alicatado_pared(1, LineasPatron, [], LineasPatronOut, Pared, [], ParedOut,Caja, CajaOut),
-   writeln('Lineas de patron:'),
-   writeln(LineasPatronOut),
-   writeln('Pared:'),
-   writeln(ParedOut),
-   writeln('Caja:'),
-   writeln(CajaOut),
-   Datos_jugador_actualizados = [LineasPatronOut, ParedOut, Suelo],
-   Datos_generales_actualizados = [Bolsa, Lista_factorias, CajaOut],
-   nth1(NumJugador,Datos_jugadores_actualizados,Datos_jugador_actualizados, Lista_datos_otros_jugadores), %Unión de los datos jugador actual con el resto
-   Supermatriz_actualizada = [Datos_generales_actualizados, Datos_jugadores_actualizados],
+   %writeln('Lineas de patron:'),
+   %writeln(LineasPatronOut),
+   %writeln('Pared:'),
+   %writeln(ParedOut),
+   %writeln('Caja:'),
+   %writeln(CajaOut),
+   DatosJugadorActualizados = [LineasPatronOut, ParedOut, Suelo],
+   DatosGenerales_actualizados = [Bolsa, ListaFactorias, CajaOut],
+   nth1(NumJugador,DatosJugadoresActualizados,DatosJugadorActualizados, ListaDatosOtrosJugadores), %Unión de los datos jugador actual con el resto
+   Supermatriz_actualizada = [DatosGenerales_actualizados, DatosJugadoresActualizados],
    get_siguiente_jugador(NumJugador, NumJugadores, _, NumSiguienteJugador),
    alicatado_paredes_jugadores(0, NumJugadorInicial, NumSiguienteJugador, NumJugadores, Supermatriz_actualizada, SupermatrizOut),!.
 
@@ -791,33 +817,33 @@ check_longitud_lista(LineaPared, Valor):- %Situación en la que no tiene 5 azule
    Valor is 0, !. %La lista no tiene 5 elementos
 
 %Comprueba la finalización o no de una partida
-check_fin_juego(Pared, ValorAux, _, Valor):-%Situación en la que una de las filas tiene 5 azulejos
+check_fin_ejecucion_ronda(Pared, ValorAux, _, Valor):-%Situación en la que una de las filas tiene 5 azulejos
    ValorAux = 0, %Aún no se han encontrado ninguna fila con 5 azulejos
    length(Pared, LongitudPared),
    LongitudPared \=0, %Quedan aún más filas
    Pared = [PrimeraLinea|RestoLineas],
    check_longitud_lista(PrimeraLinea, ValorAux2),
    ValorAux2 = 1, %La fila se encuentra completa
-   check_fin_juego(RestoLineas, ValorAux2, ValorAux2, Valor),!.
+   check_fin_ejecucion_ronda(RestoLineas, ValorAux2, ValorAux2, Valor),!.
 
-check_fin_juego(Pared, ValorAux, _,Valor):- %Situación en la que no quedan más filas a comprobar de la pared
+check_fin_ejecucion_ronda(Pared, ValorAux, _,Valor):- %Situación en la que no quedan más filas a comprobar de la pared
    ValorAux = 0, %Aún no se han encontrado ninguna fila con 5 azulejos
    length(Pared, LongitudPared),
    LongitudPared = 0, %No quedan más filas
    ValorAux2 = -1,
    ValorAux3 = 0, %No hay ninguna fila completa
-   check_fin_juego(_, ValorAux2, ValorAux3, Valor),!.
+   check_fin_ejecucion_ronda(_, ValorAux2, ValorAux3, Valor),!.
 
-check_fin_juego(Pared, ValorAux, _, Valor):- %Situación en la que la fila estudiada de la pared no tiene 5 azulejos
+check_fin_ejecucion_ronda(Pared, ValorAux, _, Valor):- %Situación en la que la fila estudiada de la pared no tiene 5 azulejos
    ValorAux = 0, %Aún no se han encontrado ninguna fila con 5 azulejos
    length(Pared, LongitudPared),
    LongitudPared \=0,%Quedan aún más filas
    Pared = [PrimeraLinea|RestoLineas],
    check_longitud_lista(PrimeraLinea, ValorAux2),
    ValorAux2 = 0,
-   check_fin_juego(RestoLineas, ValorAux2, _, Valor),!.
+   check_fin_ejecucion_ronda(RestoLineas, ValorAux2, _, Valor),!.
 
-check_fin_juego(_,_,Valor,Valor).
+check_fin_ejecucion_ronda(_,_,Valor,Valor).
 
 %Comprueba si la caja, la bolsa, el centro y las factorias estan vacias y actúa según sea conveniente.
 check_rellenar_factorias(Caja,Bolsa,Valor):- %Situación en la que la bolsa, la caja, las factorias y el centro están vacías
@@ -847,12 +873,150 @@ realizar_rellenado_factorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,Factori
    FactoriasOut = FactoriasIn.
    
 realizar_rellenado_factorias(CajaIn,CajaOut,_,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que la bolsa, las factorias y el centro están vacías, pero la caja no
+   writeln('GUAU'),
    Valor = 1,
    BolsaAux = CajaIn, %Se rellena la bosa con respecto a lo de la caja
    CajaOut = [],
    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaAux,BolsaOut).
 
 realizar_rellenado_factorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que las factorias y el centro están vacías, pero la bolsa no y el estado de la caja da igual
+   writeln('GUAU2'),
    Valor = 2,
    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaIn,BolsaOut),
    CajaOut = CajaIn.
+
+%Muestra la pared o mosaico de un jugador
+mostrar_pared(Pared):-
+   length(Pared, NumFilas),
+   NumFilas \= 0,
+   NumFilas \= 5,
+   Pared = [Primero|Resto],
+   mostrar_fila(Primero, 1, 5),
+   writeln(''),
+   writeln('+---------+'),
+   mostrar_pared(Resto),!.
+   
+mostrar_pared(Pared):-
+   length(Pared, NumFilas),
+   NumFilas = 5,
+   Pared = [Primero|Resto],
+   writeln('+---------+'),
+   mostrar_fila(Primero, 1, 5),
+   writeln(''),
+   writeln('+---------+'),
+   mostrar_pared(Resto),!.
+
+mostrar_pared(Pared):-
+   length(Pared, NumFilas),
+   NumFilas = 0,
+   write(''),!.
+
+%Muestra una fila de la pared
+mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+   length(Fila, NumElementos),
+   NumElementos \= 0,
+   NumElemento > 1,
+   Fila = [Primero|Resto],
+   write(Primero),
+   write('|'),
+   NumElementoAux is NumElemento+1,
+   NumElementosAux is NumElemPorFila-1,
+   mostrar_fila(Resto,NumElementoAux, NumElementosAux),!.
+
+%Muestra una fila de la pared
+mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+   length(Fila, NumElementos),
+   NumElementos \= 0,
+   NumElemento = 1,
+   Fila = [Primero|Resto],
+   write('|'),
+   write(Primero),
+   write('|'),
+   NumElementoAux is NumElemento+1,
+   NumElementosAux is NumElemPorFila-1,
+   mostrar_fila(Resto,NumElementoAux, NumElementosAux),!.
+   
+mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+   length(Fila, NumElementos),
+   NumElementos = 0,
+   NumElemento > 1,
+   NumElemPorFila \= 0,
+   write(' |'),
+   NumElementoAux is NumElemento+1,
+   NumElementosAux is NumElemPorFila-1,
+   mostrar_fila(Fila, NumElementoAux, NumElementosAux),!.
+
+mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+   length(Fila, NumElementos),
+   NumElementos = 0,
+   NumElemento = 1,
+   NumElemPorFila \= 0,
+   write('| |'),
+   NumElementoAux is NumElemento+1,
+   NumElementosAux is NumElemPorFila-1,
+   mostrar_fila(Fila, NumElementoAux, NumElementosAux),!.
+   
+mostrar_fila(Fila, _, NumElemPorFila):-
+   length(Fila, NumElementos),
+   NumElementos = 0,
+   NumElemPorFila = 0,
+   write(''),!.
+
+%Muestra una lista de elementos
+mostrar_lista(Lista):-
+   length(Lista, NumElementos),
+   NumElementos \= 0,
+   NumElementos \= 1,
+   Lista = [Primero|Resto],
+   write(Primero),
+   write(' '),
+   mostrar_lista(Resto).
+
+mostrar_lista(Lista):-
+   length(Lista, NumElementos),
+   NumElementos \= 0,
+   NumElementos = 1,
+   Lista = [Primero|Resto],
+   write(Primero),
+   mostrar_lista(Resto).
+
+mostrar_lista(Lista):-
+   length(Lista, NumElementos),
+   NumElementos = 0,
+   write('').
+
+%Muestra la lista de factorias
+mostrar_lista_factorias(NumFactoria, ListaFactorias):-
+   length(ListaFactorias, NumFactorias),
+   NumFactorias \= 0,
+   ListaFactorias = [Primero|Resto],
+   write('Factoria '),
+   write(NumFactoria),
+   write(':'),
+   mostrar_lista(Primero),
+   writeln('.'),
+   SiguienteNumFactoria is NumFactoria+1,
+   mostrar_lista_factorias(SiguienteNumFactoria, Resto).
+
+mostrar_lista_factorias(_, ListaFactorias):-
+   length(ListaFactorias, NumFactorias),
+   NumFactorias = 0,
+   writeln('').
+
+%Muestra el centro de la mesa
+mostrar_centro(Centro):-
+   write('Centro: '),
+   mostrar_lista(Centro),
+   writeln('.').
+
+%Muestra las distintas líneas de patrón de un jugador   
+mostrar_lineas_patron(LineasPatron):-
+   LineasPatron = [Primero|Resto],
+   mostrar_lista(Primero),
+   writeln(''),
+   mostrar_lineas_patron(Resto).
+   
+%Muestra las distintas líneas de patrón de un jugador
+mostrar_suelo(Suelo):-
+   mostrar_lista(Suelo),
+   writeln('.').
