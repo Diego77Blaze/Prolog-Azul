@@ -70,10 +70,10 @@ devolverrandom(Init,Fin,X):-random_between(Init,Fin,X).
 %Hace el rellenado de una factoria a partir de los azulejos en la bolsa
 rellenar_factorias(FactoriaAux,FactoriaOut,BolsaIn,BolsaOut):-
    length(FactoriaAux,LongitudFactoria),
-   (LongitudFactoria<4),
+   (LongitudFactoria<4), %Las factorías solo pueden tener 4 azulejos
    length(BolsaIn,LongitudBolsa),
    LongitudBolsaF is (LongitudBolsa-1),
-   devolverrandom(0,LongitudBolsaF,NumeroAleatorio),
+   devolverrandom(0,LongitudBolsaF,NumeroAleatorio), %Devuelve una posición aleatoria de la bolsa
    nth0(NumeroAleatorio,BolsaIn,FichaElegida),
    select(FichaElegida,BolsaIn,BolsaAux),
    FactoriaAux2=[FichaElegida|FactoriaAux],!,
@@ -82,17 +82,17 @@ rellenar_factorias(FactoriaAux,FactoriaOut,BolsaIn,BolsaOut):-
 rellenar_factorias(FactOut,FactOut,BolsaOut,BolsaOut).
 
 %Reglas para generar las factorias
-generar_factorias(NumJugadores, ListaOut):- %Genera factorias para 2 jugadores
+generar_factorias(NumJugadores, ListaOut):- %Genera factorías para 2 jugadores
    NumJugadores = 2, !,
-   generar_factorias_aux(5, [], ListaOut).
+   generar_factorias_aux(6, [], ListaOut). %5 factorías y el centro de la mesa
 
 generar_factorias(NumJugadores, ListaOut):- %Genera factorias para 3 jugadores
    NumJugadores = 3, !,
-   generar_factorias_aux(7, [], ListaOut).
+   generar_factorias_aux(8, [], ListaOut). %7 factorías y el centro de la mesa
 
 generar_factorias(NumJugadores, ListaOut):- %Genera factorias para 4 jugadores
    NumJugadores = 4, !,
-   generar_factorias_aux(9, [], ListaOut).
+   generar_factorias_aux(10, [], ListaOut). %9 factorías y el centro de la mesa
    
 %Introduce factorias en una lista si el número de factorias el mayor que 0
 generar_factorias_aux(NumFactorias, ListaFactorias, ListaFactoriasOut):-
@@ -154,13 +154,13 @@ pedir_color(ListaColores, ColorSeleccionado):-
       writeln('Color no valido, vuelva a intentarlo'),false).
 
 %Distribuye los elementos de una factoria en distintas listas de acuerdo al color seleccionado
-coger_color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):-
+coger_color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):- %Situación en la que el azulejo es del mismo color al pasado por parámetro
     ListaColores = [Primero|Resto],
     member(ColorSeleccionado, Primero),
     append([Primero], ListaColor, ListaColorAux),
     coger_color(Resto, ColorSeleccionado, ListaColorAux, ListaColorOut, CentroMesa, CentroMesaOut).
 
-coger_color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):-
+coger_color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMesa, CentroMesaOut):- %Situación en la que el azulejo no es del mismo color al pasado por parámetro
     ListaColores = [Primero|Resto],
     member(ColorSeleccionado, Primero),
     not(member(ColorSeleccionado, Primero)),
@@ -170,13 +170,13 @@ coger_color(ListaColores, ColorSeleccionado, ListaColor, ListaColorOut, CentroMe
 coger_color(_, _, ListaColorOut, ListaColorOut, CentroMesaOut, CentroMesaOut).
 
 %Generar lista de colores a partir de las fichas de una factoria
-get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
+get_lista_colores(Factoria, ListaColores, ListaColoresOut):- %Situación en la que es un nuevo color a los guardados en la lista
     Factoria = [Primero|Resto],
     \+(member(Primero, ListaColores)),
     append(ListaColores, [Primero], ListaColoresAux),
     get_lista_colores(Resto, ListaColoresAux, ListaColoresOut).
 
-get_lista_colores(Factoria, ListaColores, ListaColoresOut):-
+get_lista_colores(Factoria, ListaColores, ListaColoresOut):- %Situación en la que no es un nuevo color a los guardados en la lista
     Factoria = [Primero|Resto],
     (member(Primero, ListaColores)),
     get_lista_colores(Resto, ListaColores, ListaColoresOut).
@@ -250,9 +250,9 @@ generar_supermatriz(_, Supermatriz, Supermatriz).
 %genera la lista de los datos de cada jugador
 generar_lista_datos_jugador(NumJugadores, ListaDatosJugadorAux, ListaDatosJugador):-
     NumJugadores \= 0, !,
-    linea_patrones(LineasPatrones),
-    pared(Pared),
-    suelo(Suelo),
+    linea_patrones(LineasPatrones), %Genera las líneas de patrón
+    pared(Pared), %Genera la pared
+    suelo(Suelo), %Genera el suelo
     ListaDatosJugadorAux2 = ([LineasPatrones, Pared, Suelo]),
     NumJugadoresAux is (NumJugadores-1),
     append(ListaDatosJugadorAux, [ListaDatosJugadorAux2], ListaDatosJugadorAux3),
@@ -261,7 +261,7 @@ generar_lista_datos_jugador(NumJugadores, ListaDatosJugadorAux, ListaDatosJugado
 generar_lista_datos_jugador(_, ListaDatosJugador, ListaDatosJugador).
 
 %Rellena una línea de patrón mientras que tenga espacio
-rellenarPatron(Fila, Cantidad, Color, PatronIn, PatronOut, SueloIn, SueloOut, CajaIn, CajaOut):-
+rellenarPatron(Fila, Cantidad, Color, PatronIn, PatronOut, SueloIn, SueloOut, CajaIn, CajaOut):- %Situación en la que hay aún espacio disponible en la línea de patrón
    length(PatronIn, NumAzulejosColocados),
    EspacioDisponible is Fila-NumAzulejosColocados,
    EspacioDisponible \= 0,
@@ -270,7 +270,7 @@ rellenarPatron(Fila, Cantidad, Color, PatronIn, PatronOut, SueloIn, SueloOut, Ca
    CantidadAux is Cantidad-1,
    rellenarPatron(Fila, CantidadAux, Color, Patron, PatronOut, SueloIn, SueloOut, CajaIn, CajaOut),!.
 
-rellenarPatron(Fila, Cantidad, Color, PatronIn, PatronOut, SueloIn, SueloOut, CajaIn, CajaOut):-
+rellenarPatron(Fila, Cantidad, Color, PatronIn, PatronOut, SueloIn, SueloOut, CajaIn, CajaOut):- %Situación en la que no hay espacio disponible en la línea de patrón
    length(PatronIn, NumAzulejosColocados),
    EspacioDisponible is Fila-NumAzulejosColocados,
    EspacioDisponible = 0,
@@ -284,7 +284,7 @@ rellenarPatron(_,_,_,PatronOut,PatronOut,SueloOut,SueloOut,CajaOut,CajaOut).
 max_tamanno_suelo(7).
 
 %Rellena el suelo con los azulejos que no han entrado en la línea de patrón y sino entra, lo coloca en la caja
-rellenar_suelo(SueloIn,SueloOut,Cantidad,Color,CajaIn,CajaOut):-
+rellenar_suelo(SueloIn,SueloOut,Cantidad,Color,CajaIn,CajaOut):- %Situación en la que hay aún espacio disponible en el suelo
    length(SueloIn, NumAzulejosColocados),
    max_tamanno_suelo(TamannoSuelo),
    EspacioDisponible is TamannoSuelo - NumAzulejosColocados,
@@ -294,7 +294,7 @@ rellenar_suelo(SueloIn,SueloOut,Cantidad,Color,CajaIn,CajaOut):-
    CantidadAux is Cantidad-1,
    rellenar_suelo(Suelo,SueloOut,CantidadAux,Color,CajaIn,CajaOut).
 
-rellenar_suelo(SueloIn,SueloOut,Cantidad,Color,CajaIn,CajaOut):-
+rellenar_suelo(SueloIn,SueloOut,Cantidad,Color,CajaIn,CajaOut):- %Situación en la que no hay espacio disponible en el suelo
    length(SueloIn, NumAzulejosColocados),
    max_tamanno_suelo(TamannoSuelo),
    EspacioDisponible is TamannoSuelo - NumAzulejosColocados,
@@ -307,13 +307,13 @@ rellenar_suelo(SueloIn,SueloOut,Cantidad,Color,CajaIn,CajaOut):-
 rellenar_suelo(SueloOut,SueloOut,_,_,CajaOut,CajaOut).
 
 %Obtiene la lista de azulejos a colocar en la línea de patrones y la lista de azulejos que van a ir al centro de la mesa
-get_azulejo_factoria(Factoria, Color, ListaAux, ListaFichas, ListaCentroAux, ListaCentro):-
+get_azulejo_factoria(Factoria, Color, ListaAux, ListaFichas, ListaCentroAux, ListaCentro):- %Situación en la que el color del azulejo del estudiado es igual al color pasado por parámetro
    Factoria = ([Primero | Resto]),
    Primero = Color, !,
    append(ListaAux, [Primero], ListaAux2),
    get_azulejo_factoria(Resto, Color, ListaAux2, ListaFichas, ListaCentroAux, ListaCentro).
 
-get_azulejo_factoria(Factoria, Color, ListaAux, ListaFichas, ListaCentroAux, ListaCentro):-
+get_azulejo_factoria(Factoria, Color, ListaAux, ListaFichas, ListaCentroAux, ListaCentro):- %Situación en la que el color del azulejo del estudiado es distinto al color pasado por parámetro
    Factoria = [Primero | Resto],
    Primero \= Color, !,
    append(ListaCentroAux, [Primero], ListaCentroAux2),
@@ -361,7 +361,7 @@ get_azulejo_centro(Centro, ColorSeleccionado, ListaFichasAux, ListaFichas, Lista
 get_azulejo_centro(_,_, ListaFichas, ListaFichas, CentroActualizado, CentroActualizado).
 
 %Realiza el rellenado de la pared o mosaico de un jugador
-alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
+alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):- %Situación en la que la fila estudiada de la pared está vacía
     LineasPatron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
     is_empty(Primero, Valor),
     Valor = 1, %Lista está vacía
@@ -371,7 +371,7 @@ alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pare
     FilaSiguiente is FilaActual+1, %Se obtiene la fila siguiente a estudiar
     alicatado_pared(FilaSiguiente, Resto, LineasPatronAux2, LineasPatronOut, RestoFilas, ParedAux2, ParedOut, CajaIn, CajaOut),!.
 
-alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
+alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):- %Situación en la que el color no se encuentra en la fila estudiada de la pared
     LineasPatron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
     is_empty(Primero, Valor), %Verificar que la lista no está vacía
     Valor \= 1, %Lista no está vacía
@@ -392,7 +392,6 @@ alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pare
     LineasPatron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
     is_empty(Primero, Valor),
     Valor \= 1, %Lista no está vacía
-    %not(estaVacia(Primero)), !, %Verificar que la lista no está vacía
     length(Primero, NumFichasColocadas), %Se obtiene el número de azulejos colocados en una línea de patrón
     NumFichasColocadas < FilaActual, %!, %El número de elemento en la fila no es igual al número de fichas que se pueden colocar en dicha fila
     Pared = [PrimeraFila|RestoFilas],%Separación de la cabeza de las filas de la pared de la cola de la misma
@@ -401,7 +400,7 @@ alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pare
     FilaSiguiente is FilaActual+1, %Se obtiene la fila siguiente a estudiar
     alicatado_pared(FilaSiguiente, Resto, LineasPatronAux2, LineasPatronOut, RestoFilas, ParedAux2, ParedOut, CajaIn, CajaOut),!.
 
-alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):-
+alicatado_pared(FilaActual, LineasPatron, LineasPatronAux, LineasPatronOut, Pared, ParedAux, ParedOut,CajaIn, CajaOut):- %Situación en la que el color ya se encuentra en la fila estudiada de la pared
     LineasPatron = [Primero|Resto], %Separación de la cabeza de las líneas de patrón de la cola de la misma
     is_empty(Primero, Valor),
     Valor \= 1, %Lista no está vacía
@@ -430,7 +429,7 @@ rellenar_caja(Cantidad, Color, CajaIn, CajaOut):-
 rellenar_caja(_,_,CajaOut,CajaOut).
 
 %Obtiene la lista de factorias y el centro en relación a la selección del jugador
-get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, ListaFichas, ListaFichasOut, _, Color):-
+get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, ListaFichas, ListaFichasOut, _, Color):- %Situación en la que se trabaja con una de las factorias
    NumFactoria \= -1,
    NumFactoria \= MaxNumFactoria, %Separación de los casos en los que se trabaja con cualquier factoria y no al centro
    nth1(MaxNumFactoria, ListaFactorias, Centro, ListaFactoriasSinCentro), %Separación centro del resto de factorias
@@ -449,7 +448,7 @@ get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, List
    nth1(MaxNumFactoria, ListaFactoriasOutAux2, ListaCentroAux, ListaFactoriasOutAux),    %Coloca el centro junto con las factorias
    get_azulejo(-1, MaxNumFactoria, ListaFactoriasOutAux2, ListaFactoriasOut, ListaFichasAux, ListaFichasOut, ColorSeleccionado, Color).
 
-get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, ListaFichas, ListaFichasOut, _, Color):-
+get_azulejo(NumFactoria, MaxNumFactoria, ListaFactorias, ListaFactoriasOut, ListaFichas, ListaFichasOut, _, Color):- %Situación en la que se trabaja con el centro de la mesa
    NumFactoria \= -1,
    NumFactoria = MaxNumFactoria, %Separación de los casos en los que se trabaja con cualquier factoria y no al centro
    nth1(MaxNumFactoria, ListaFactorias, Centro, ListaFactoriasSinCentro), %Separación centro del resto de factorias
@@ -503,23 +502,18 @@ ejecucion_ronda(Ronda, _, NumJugadorInicial, NumJugador, NumJugadores, Supermatr
    nth0(1,Supermatriz_actualizada,DatosJugadores), %Se sacan los datos de las líneas de patrón, la pared y el suelo de cada jugador
    nth0(0,DatosGeneralesAux,Bolsa), %Cogemos la bolsa
    nth0(2,DatosGeneralesAux,Caja), %Cogemos la caja
-   length(ListaFactoriasAux,LongitudListaFactorias), %Obtenemos la longitud de lista de factorias
-   nth1(LongitudListaFactorias, ListaFactoriasAux, Centro, ListaFactoriasSinCentro), %Separación centro del resto de factorias
    search_ganador(1, NumJugadorInicial, NumJugadorInicial, NumJugadores, DatosJugadores, GanadorAux),
    GanadorAux = -1, %Se sigue jugando si no hay ningún jugador que haya completado una línea de la pared
    check_rellenar_factorias(Caja,Bolsa,ValorAux),
    ValorAux \= 0, %Situaciones en las que aún quedan azulejos
-   writeln('MIAU'),
-   writeln(ListaFactoriasSinCentro),
-   realizar_rellenado_factorias(Caja,CajaOut,Bolsa,BolsaOut,ListaFactoriasSinCentro,ListaFactoriasOut,ValorAux),
-   nth1(LongitudListaFactorias, ListaFactorias_actualizada, Centro, ListaFactoriasOut), %Unión centro con el resto de factorias
-   DatosGenerales_actualizados = [BolsaOut, ListaFactorias_actualizada, CajaOut],
+   realizar_rellenado_factorias(Caja,CajaOut,Bolsa,BolsaOut,ListaFactoriasAux,ListaFactoriasOut,ValorAux),
+   DatosGenerales_actualizados = [BolsaOut, ListaFactoriasOut, CajaOut],
    Supermatriz_actualizada2 = [DatosGenerales_actualizados, DatosJugadores],
    writeln(Supermatriz_actualizada2),
    SiguienteRonda is Ronda+1,
    ejecucion_ronda(SiguienteRonda, 1, NumJugador, NumJugador, NumJugadores, Supermatriz_actualizada2, Ganador),!.
 
-ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
+ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):- %Situación en la que se acaba el juego por no quedar azulejos
    nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
    nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
    is_empty_lista_de_listas(ListaFactorias, 1, _, Valor),
@@ -534,7 +528,7 @@ ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):
    ValorAux = 0, %Situaciones en las que el juego ha llegado a su fin
    Ganador = GanadorAux,!.
 
-ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):-
+ejecucion_ronda(_, _, NumJugadorInicial, _, NumJugadores, Supermatriz, Ganador):- %Situación en la que se acaba con la victoria de uno de los jugadores
    nth0(0,Supermatriz,DatosGenerales), %Se sacan los datos de la bolsa, las factorias, el centro y la caja
    nth0(1,DatosGenerales,ListaFactorias), %Cogemos la lista de factorias junto con el centro
    is_empty_lista_de_listas(ListaFactorias, 1, _, Valor),
@@ -559,9 +553,6 @@ realizar_oferta_factorias(NumJugador, Supermatriz, SupermatrizActualizada):-
    nth0(1, ListaDatosJugador, Pared),
    nth0(2, ListaDatosJugador, Suelo),
    
-   writeln('Bolsa:'),
-   writeln(Bolsa),
-   
    writeln('Línes de patrones'),
    mostrar_pared(LineasPatron),
    writeln('Su mosaico:'),
@@ -569,7 +560,6 @@ realizar_oferta_factorias(NumJugador, Supermatriz, SupermatrizActualizada):-
    write('Su suelo:'),
    mostrar_suelo(Suelo),
    
-   writeln('Contenido factorias:'),
    mostrar_lista_factorias(1, ListaFactoriasSinCentro),
    writeln('Contenido centro de la mesa:'),
    mostrar_centro(Centro),
@@ -580,7 +570,7 @@ realizar_oferta_factorias(NumJugador, Supermatriz, SupermatrizActualizada):-
    writeln(''),
    writeln(ListaFactoriasOut),
    is_space_available(ColorSeleccionado,LineasPatron, Valor2),
-   colocarAzulejos(ColorSeleccionado, ListaFichas, Valor2, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
+   colocar_azulejos(ColorSeleccionado, ListaFichas, Valor2, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut),
    DatosJugadorActualizados = [PatronOut, Pared, SueloOut],
    nth1(NumJugador,DatosJugadoresActualizados,DatosJugadorActualizados, ListaDatosOtrosJugadores), %Unión de los datos jugador actual con el resto
    DatosGenerales_actualizados = [Bolsa, ListaFactoriasOut, CajaOut],
@@ -661,32 +651,33 @@ is_espacio_disponible(Color, NumFila, ListaLineaPatrones, ValorAux, _, Valor):- 
 
 is_espacio_disponible(_,_,_,_,Valor,Valor).
 
-colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut):-
+%Se realiza la colocación de los azulejos en una línea de patrón
+colocar_azulejos(ColorSeleccionado, ListaFichas, Valor, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut):- %Situación en la que entra al menos algunas de las fichas
    Valor = 1,
    pedir_linea_patron(LineasPatron, ColorSeleccionado, FilaLineaPatron),
    length(ListaFichas, NumFichas),
    nth1(FilaLineaPatron, LineasPatron, LineaPatron, OtrasLineasPatron), %Se separa la línea de patrón a modificar de las demás
    rellenarPatron(FilaLineaPatron,NumFichas,ColorSeleccionado,LineaPatron,PatronAux,Suelo,SueloAux,Caja,CajaAux),
    nth1(FilaLineaPatron, LineasPatronAux, PatronAux, OtrasLineasPatron), %Se une la línea de patrón modificada con las demás
-   colocarAzulejos(ColorSeleccionado, ListaFichas, -1, LineasPatronAux, PatronOut, SueloAux, SueloOut, CajaAux, CajaOut),!.
+   colocar_azulejos(ColorSeleccionado, ListaFichas, -1, LineasPatronAux, PatronOut, SueloAux, SueloOut, CajaAux, CajaOut),!.
 
-colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut):-
+colocar_azulejos(ColorSeleccionado, ListaFichas, Valor, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut):- %Situación en la que no entran más fichas ni en las líneas de patrón ni en el suelo
    Valor = 0,
    length(Suelo, NumFichasSuelo),
    NumFichasSuelo = 7,
    writeln('Dado que no entrar los azulejos escogidos en ninguna línea de patrón, se van a distribuir entre el suelo, lugar prioritario, y en la caja, si no queda espacio en el suelo.'),
    append(Caja, ListaFichas, CajaAux),
-   colocarAzulejos(ColorSeleccionado, ListaFichas, -1, LineasPatron, PatronOut, Suelo, SueloOut, CajaAux, CajaOut),!.
+   colocar_azulejos(ColorSeleccionado, ListaFichas, -1, LineasPatron, PatronOut, Suelo, SueloOut, CajaAux, CajaOut),!.
 
-colocarAzulejos(ColorSeleccionado, ListaFichas, Valor, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut):-
+colocar_azulejos(ColorSeleccionado, ListaFichas, Valor, LineasPatron, PatronOut, Suelo, SueloOut, Caja, CajaOut):- %Situación en la que no entran más fichas en ninguna línea de patrón
    Valor = 0,
    length(Suelo, NumFichasSuelo),
    NumFichasSuelo \= 7,
    ListaFichas = [Primero|Resto],
    append(Suelo, [Primero], SueloAux),
-   colocarAzulejos(ColorSeleccionado, Resto, Valor, LineasPatron, PatronOut, SueloAux, SueloOut, Caja, CajaOut).
+   colocar_azulejos(ColorSeleccionado, Resto, Valor, LineasPatron, PatronOut, SueloAux, SueloOut, Caja, CajaOut).
    
-colocarAzulejos(_,_,_, PatronOut, PatronOut, SueloOut, SueloOut, CajaOut, CajaOut).
+colocar_azulejos(_,_,_, PatronOut, PatronOut, SueloOut, SueloOut, CajaOut, CajaOut).
 
 %Busca al ganador de la partida
 search_ganador(_, NumJugadorInicial, NumJugador, _, ListaDatosJugador, Ganador):- %Situación en la que un jugador, que no es el inicial, es el ganador
@@ -731,14 +722,14 @@ search_ganador(Situacion, NumJugadorInicial, NumJugador, _, _, Ganador):- %Situa
    Ganador = -1,!. %No hay ganador
 
 %Obtiene el siguiente jugador a jugar
-get_siguiente_jugador(NumJugador, NumJugadores, _, NumJugadorOut):-
+get_siguiente_jugador(NumJugador, NumJugadores, _, NumJugadorOut):- %Situación en la que no se ha llegado al último jugador
    NumJugador > 0,
    NumJugador < NumJugadores,
    SiguienteJugador is NumJugador+1,
    NumJugadorAux = 0,
    get_siguiente_jugador(NumJugadorAux, NumJugadores, SiguienteJugador, NumJugadorOut),!.
 
-get_siguiente_jugador(NumJugador, NumJugadores, _, NumJugadorOut):-
+get_siguiente_jugador(NumJugador, NumJugadores, _, NumJugadorOut):- %Situación en la que se ha llegado al último jugador
    NumJugador > 0,
    NumJugador = NumJugadores,
    SiguienteJugador = 1,
@@ -762,12 +753,17 @@ alicatado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, NumJugador
    nth0(1, ListaDatosJugador, Pared),
    nth0(2, ListaDatosJugador, Suelo),
    alicatado_pared(1, LineasPatron, [], LineasPatronOut, Pared, [], ParedOut,Caja, CajaOut),
-   %writeln('Lineas de patron:'),
-   %writeln(LineasPatronOut),
-   %writeln('Pared:'),
-   %writeln(ParedOut),
-   %writeln('Caja:'),
-   %writeln(CajaOut),
+   
+   write('Resultado alicatado para jugador '),
+   write(NumJugador),
+   writeln(':'),
+   writeln('Línes de patrones'),
+   mostrar_pared(LineasPatronOut),
+   writeln('Su mosaico:'),
+   mostrar_pared(ParedOut),
+   write('Su suelo:'),
+   mostrar_suelo(Suelo),
+   
    DatosJugadorActualizados = [LineasPatronOut, ParedOut, Suelo],
    DatosGenerales_actualizados = [Bolsa, ListaFactorias, CajaOut],
    nth1(NumJugador,DatosJugadoresActualizados,DatosJugadorActualizados, ListaDatosOtrosJugadores), %Unión de los datos jugador actual con el resto
@@ -790,12 +786,17 @@ alicatado_paredes_jugadores(Situacion, NumJugadorInicial, NumJugador, NumJugador
    nth0(1, ListaDatosJugador, Pared),
    nth0(2, ListaDatosJugador, Suelo),
    alicatado_pared(1, LineasPatron, [], LineasPatronOut, Pared, [], ParedOut,Caja, CajaOut),
-   %writeln('Lineas de patron:'),
-   %writeln(LineasPatronOut),
-   %writeln('Pared:'),
-   %writeln(ParedOut),
-   %writeln('Caja:'),
-   %writeln(CajaOut),
+   
+   write('Resultado alicatado para jugador '),
+   write(NumJugador),
+   writeln(':'),
+   writeln('Línes de patrones'),
+   mostrar_pared(LineasPatronOut),
+   writeln('Su mosaico:'),
+   mostrar_pared(ParedOut),
+   write('Su suelo:'),
+   mostrar_suelo(Suelo),
+   
    DatosJugadorActualizados = [LineasPatronOut, ParedOut, Suelo],
    DatosGenerales_actualizados = [Bolsa, ListaFactorias, CajaOut],
    nth1(NumJugador,DatosJugadoresActualizados,DatosJugadorActualizados, ListaDatosOtrosJugadores), %Unión de los datos jugador actual con el resto
@@ -873,20 +874,20 @@ realizar_rellenado_factorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,Factori
    FactoriasOut = FactoriasIn.
    
 realizar_rellenado_factorias(CajaIn,CajaOut,_,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que la bolsa, las factorias y el centro están vacías, pero la caja no
-   writeln('GUAU'),
+   %writeln('GUAU'),
    Valor = 1,
    BolsaAux = CajaIn, %Se rellena la bosa con respecto a lo de la caja
    CajaOut = [],
    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaAux,BolsaOut).
 
 realizar_rellenado_factorias(CajaIn,CajaOut,BolsaIn,BolsaOut,FactoriasIn,FactoriasOut,Valor):- %Situación en la que las factorias y el centro están vacías, pero la bolsa no y el estado de la caja da igual
-   writeln('GUAU2'),
+   %writeln('GUAU2'),
    Valor = 2,
    rellenar_factorias_generadas(FactoriasIn,[],FactoriasOut,BolsaIn,BolsaOut),
    CajaOut = CajaIn.
 
 %Muestra la pared o mosaico de un jugador
-mostrar_pared(Pared):-
+mostrar_pared(Pared):- %Situación para las filas intermedias y la última
    length(Pared, NumFilas),
    NumFilas \= 0,
    NumFilas \= 5,
@@ -896,7 +897,7 @@ mostrar_pared(Pared):-
    writeln('+---------+'),
    mostrar_pared(Resto),!.
    
-mostrar_pared(Pared):-
+mostrar_pared(Pared):- %Situación para la primera fila
    length(Pared, NumFilas),
    NumFilas = 5,
    Pared = [Primero|Resto],
@@ -906,13 +907,13 @@ mostrar_pared(Pared):-
    writeln('+---------+'),
    mostrar_pared(Resto),!.
 
-mostrar_pared(Pared):-
+mostrar_pared(Pared):- %Situación de fin
    length(Pared, NumFilas),
    NumFilas = 0,
    write(''),!.
 
 %Muestra una fila de la pared
-mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+mostrar_fila(Fila, NumElemento, NumElemPorFila):- %Situación en la que quedan elementos en la fila y no es el primer elemento de la fila
    length(Fila, NumElementos),
    NumElementos \= 0,
    NumElemento > 1,
@@ -923,8 +924,7 @@ mostrar_fila(Fila, NumElemento, NumElemPorFila):-
    NumElementosAux is NumElemPorFila-1,
    mostrar_fila(Resto,NumElementoAux, NumElementosAux),!.
 
-%Muestra una fila de la pared
-mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+mostrar_fila(Fila, NumElemento, NumElemPorFila):- %Situación en la que quedan elementos en la fila y es el primer elemento de la fila
    length(Fila, NumElementos),
    NumElementos \= 0,
    NumElemento = 1,
@@ -936,7 +936,7 @@ mostrar_fila(Fila, NumElemento, NumElemPorFila):-
    NumElementosAux is NumElemPorFila-1,
    mostrar_fila(Resto,NumElementoAux, NumElementosAux),!.
    
-mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+mostrar_fila(Fila, NumElemento, NumElemPorFila):- %Situación en la que no quedan elementos en la fila, no es el primer elemento de la fila y aún quedan huecos que completar del tablero hasta llegar a la quinta posición de la fila
    length(Fila, NumElementos),
    NumElementos = 0,
    NumElemento > 1,
@@ -946,7 +946,7 @@ mostrar_fila(Fila, NumElemento, NumElemPorFila):-
    NumElementosAux is NumElemPorFila-1,
    mostrar_fila(Fila, NumElementoAux, NumElementosAux),!.
 
-mostrar_fila(Fila, NumElemento, NumElemPorFila):-
+mostrar_fila(Fila, NumElemento, NumElemPorFila):- %Situación en la que no quedan elementos en la fila, es el primer elemento de la fila y aún quedan huecos que completar del tablero hasta llegar a la quinta posición de la fila
    length(Fila, NumElementos),
    NumElementos = 0,
    NumElemento = 1,
@@ -956,14 +956,14 @@ mostrar_fila(Fila, NumElemento, NumElemPorFila):-
    NumElementosAux is NumElemPorFila-1,
    mostrar_fila(Fila, NumElementoAux, NumElementosAux),!.
    
-mostrar_fila(Fila, _, NumElemPorFila):-
+mostrar_fila(Fila, _, NumElemPorFila):- %Situación en la que ni quedan elementos en la fila ni quedan huecos que completar del tablero hasta llegar a la quinta posición de la fila
    length(Fila, NumElementos),
    NumElementos = 0,
    NumElemPorFila = 0,
    write(''),!.
 
 %Muestra una lista de elementos
-mostrar_lista(Lista):-
+mostrar_lista(Lista):- %Situación en la que quedan elementos en la lista y no es el primer elemento el que se estudia
    length(Lista, NumElementos),
    NumElementos \= 0,
    NumElementos \= 1,
@@ -972,7 +972,7 @@ mostrar_lista(Lista):-
    write(' '),
    mostrar_lista(Resto).
 
-mostrar_lista(Lista):-
+mostrar_lista(Lista):- %Situación en la que quedan elementos en la lista y es el primer elemento el que se estudia
    length(Lista, NumElementos),
    NumElementos \= 0,
    NumElementos = 1,
@@ -980,7 +980,7 @@ mostrar_lista(Lista):-
    write(Primero),
    mostrar_lista(Resto).
 
-mostrar_lista(Lista):-
+mostrar_lista(Lista):- %Situación en la que no quedan elementos en la lista
    length(Lista, NumElementos),
    NumElementos = 0,
    write('').
